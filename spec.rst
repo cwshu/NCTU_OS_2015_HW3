@@ -14,12 +14,12 @@ Then, you will write two userspace programs to do experiment. (Section 4 Part B,
 
 To do this homework, there are 3 tutorial sections.
 
-   - In Section 1, we will tell about how to get process memory layout in Linux by procfs.
-     We also discuss about shared libraries in memory layout, so we'll handcraft a simple shared library.
+- In Section 1, we will tell about how to get process memory layout in Linux by procfs.
+  We also discuss about shared libraries in memory layout, so we'll handcraft a simple shared library.
 
-   - In Section 2, we will give you a guide for how to add a system call in linux kernel.
+- In Section 2, we will give you a guide for how to add a system call in linux kernel.
 
-   - In Section 3, we will show you how address translation take place in x86_64 linux kernel.
+- In Section 3, we will show you how address translation take place in x86_64 linux kernel.
 
 If you know how to do them, you can jump to Section 4 for homework requirement and example code.
 
@@ -171,24 +171,24 @@ After introduction, we will start run simple program and observe the virtual mem
 
       Code and Data segment are both 0x1000 bytes, which means they only have one 4KB page in their memory segment.
 
-       :: 
+      :: 
 
          00400000-00401000 r-xp 00000000 08:06 2490469          /home/susu/workspace/2015_OS_hw3/partA/hello.out
          00600000-00601000 rw-p 00000000 08:06 2490469          /home/susu/workspace/2015_OS_hw3/partA/hello.out
 
-    b. Second, stack segment
+   b. Second, stack segment
 
-       Stack segment has read and write permission. It is same as Data segment.
+      Stack segment has read and write permission. It is same as Data segment.
 
-       segment size = 0x7ffdf1cb1000 - 0x7ffdf1c90000 = 0x21000, so it is consist of 33 4KB pages in stack segment.
-       :: 
+      segment size = 0x7ffdf1cb1000 - 0x7ffdf1c90000 = 0x21000, so it is consist of 33 4KB pages in stack segment.
+      :: 
 
          7ffdf1c90000-7ffdf1cb1000 rw-p 00000000 00:00 0        [stack]
 
-    c. Third, shared libraries
+   c. Third, shared libraries
     
-       Like process name, shared libraries.
-       ::
+      Like process name, shared libraries.
+      ::
 
          7fde68109000-7fde682a4000 r-xp 00000000 08:06 8787453  /usr/lib/libc-2.22.so
          7fde682a4000-7fde684a3000 ---p 0019b000 08:06 8787453  /usr/lib/libc-2.22.so
@@ -201,10 +201,10 @@ After introduction, we will start run simple program and observe the virtual mem
          7fde686ce000-7fde686cf000 r--p 00021000 08:06 8787452  /usr/lib/ld-2.22.so
          7fde686cf000-7fde686d0000 rw-p 00022000 08:06 8787452  /usr/lib/ld-2.22.so
 
-       libc.so is standard C library, consist of implementation of ``printf()``, ``fopen()``. [5]_
-       ld.so is the dynamic linker/loader, which help you to dynamic loading other shared libraries. [6]_
+      libc.so is standard C library, consist of implementation of ``printf()``, ``fopen()``. [5]_
+      ld.so is the dynamic linker/loader, which help you to dynamic loading other shared libraries. [6]_
 
-       ``ldd`` can help you know the shared library dependency of executable.::
+      ``ldd`` can help you know the shared library dependency of executable.::
 
          # dependency of hello.out
          $ ldd hello.out
@@ -216,7 +216,7 @@ After introduction, we will start run simple program and observe the virtual mem
          # ldd <executable path of ls>
          $ ldd `which ls`
        
-    d. Last, others, doesn't discuss in this HW
+   d. Last, others, doesn't discuss in this HW
 
 5. close the program::
 
@@ -281,19 +281,19 @@ We will then demonstrate how to implement a new system call on Ubuntu Linux.
 A. Use ``strace`` to trace the system calls made by the ``ls`` command
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-   1. Use ``strace``::
+1. Use ``strace``::
 
-      $ strace ls 2>& strace.txt
- 
-   2. Open/Cat the output file ``strace.txt`` (e.g. Figure 6)
-   
-   .. figure:: pic/strace_cmd_ex.png
-      :scale: 50%
+   $ strace ls 2>& strace.txt
 
-      **Figure 6. screenshot of strace command**
+2. Open/Cat the output file ``strace.txt`` (e.g. Figure 6)
 
-   3. You can see all the system calls made by the ls command in sequential order.
-      For instance, in Figure 6, we can see that the ls command has invoked the execve, brk, access, and mmap system calls.
+.. figure:: pic/strace_cmd_ex.png
+   :scale: 50%
+
+   **Figure 6. screenshot of strace command**
+
+3. You can see all the system calls made by the ls command in sequential order.
+   For instance, in Figure 6, we can see that the ls command has invoked the execve, brk, access, and mmap system calls.
 
 B. Add a custom system call
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -301,193 +301,193 @@ B. Add a custom system call
 1. Download the kernel source
 """""""""""""""""""""""""""""
 
-      A. find the kernel version::
+A. find the kernel version::
 
-            $ uname -r
-            3.19.0-25-generic
-            # 3.19.0 is origin linux kernel version, 25 is version of ubuntu 14.04.3's distrbution patch to linux 3.19.0
+      $ uname -r
+      3.19.0-25-generic
+      # 3.19.0 is origin linux kernel version, 25 is version of ubuntu 14.04.3's distrbution patch to linux 3.19.0
 
-      B. download kernel source
+B. download kernel source
 
-         In this homework, we use vanilla linux kernel instead of distribution kernel because we only do something simple.
-         So, we should go to linux kernel maintain site(``kernel.org``) to download kernel source.
+   In this homework, we use vanilla linux kernel instead of distribution kernel because we only do something simple.
+   So, we should go to linux kernel maintain site(``kernel.org``) to download kernel source.
 
-         ``kernel.org`` website
+   ``kernel.org`` website
 
-              .. figure:: pic/kernel_org.png
-                 :scale: 50%
+        .. figure:: pic/kernel_org.png
+           :scale: 50%
 
-                 Figure 7.
+           Figure 7.
 
-         - Go to location to download from HTTP 
+   - Go to location to download from HTTP 
 
-              .. figure:: pic/kernel_org_http.png
-                 :scale: 50%
+        .. figure:: pic/kernel_org_http.png
+           :scale: 50%
 
-                 Figure 8.
+           Figure 8.
 
-         - Go to ``linux/kernel/v3.0``
-         - find ``3.19.tar`` in website
+   - Go to ``linux/kernel/v3.0``
+   - find ``3.19.tar`` in website
 
-              .. figure:: pic/kernel_319.png
-                 :scale: 50%
+        .. figure:: pic/kernel_319.png
+           :scale: 50%
 
-                 Figure 9.
+           Figure 9.
 
-         - download ``tar.gz`` or ``tar.xz`` (they are only different from encryption method)
-         - unpack and decryption::
+   - download ``tar.gz`` or ``tar.xz`` (they are only different from encryption method)
+   - unpack and decryption::
 
-              $ tar -xvf linux-3.19.tar.gz
-              # decrypt directory linux-3.19/ at current working directory.
+        $ tar -xvf linux-3.19.tar.gz
+        # decrypt directory linux-3.19/ at current working directory.
 
 2. Add kernel patch to kernel source
 """"""""""""""""""""""""""""""""""""
    
-      A. Add a custom system call to the syscall table (see Figure 10)::
+A. Add a custom system call to the syscall table (see Figure 10)::
 
-         $ vim [source code directory]/arch/x86/syscalls/syscall_64.tbl
+   $ vim [source code directory]/arch/x86/syscalls/syscall_64.tbl
 
-      .. figure:: pic/syscall_table.png
-         :scale: 75%
-        
-         **Figure 10. add a system call ‘sayhello’ to syscall table**
+.. figure:: pic/syscall_table.png
+   :scale: 75%
+  
+   **Figure 10. add a system call ‘sayhello’ to syscall table**
 
-      B. Add the system call function prototype to the syscall interface (see Figure 11)::
-      
-         $ vim [source code directory]/include/linux/syscalls.h
-         
-      .. figure:: pic/syscall_prototype.png
-         :scale: 75%
+B. Add the system call function prototype to the syscall interface (see Figure 11)::
 
-         **Figure 11. add the system call ‘sayhello’ function prototype to the syscall interface**
+   $ vim [source code directory]/include/linux/syscalls.h
+   
+.. figure:: pic/syscall_prototype.png
+   :scale: 75%
 
-      C. Implement the custom system call definition (see Figure 12)::
+   **Figure 11. add the system call ‘sayhello’ function prototype to the syscall interface**
 
-         $ vim [source code directory]/kernel/sayhello.c
+C. Implement the custom system call definition (see Figure 12)::
 
-      .. figure:: pic/syscall_definition.png
-         :scale: 75%
-        
-         **Figure 12. implement the system call ‘sayhello’**
+   $ vim [source code directory]/kernel/sayhello.c
 
-      D. Modify the Makefile, add system call definition to build system config(e.g. Figure 13)::
+.. figure:: pic/syscall_definition.png
+   :scale: 75%
+  
+   **Figure 12. implement the system call ‘sayhello’**
 
-         $ vim [source code directory]/kernel/Makefile
+D. Modify the Makefile, add system call definition to build system config(e.g. Figure 13)::
 
-      .. figure:: pic/kernel_makefile.png
-         :scale: 75%
+   $ vim [source code directory]/kernel/Makefile
 
-         **Figure 13. modify the Makefile**
+.. figure:: pic/kernel_makefile.png
+   :scale: 75%
 
-      E. [important to do] giving the patched kernel unique name, for easily install in next step (see Figure 14.)::
+   **Figure 13. modify the Makefile**
 
-         $ vim [source code directory]/Makefile
-     
-      .. figure:: pic/kernel_extra_version.png
-         :scale: 75%
+E. [important to do] giving the patched kernel unique name, for easily install in next step (see Figure 14.)::
 
-         **Figure 14. modify kernel extra version to give patched kernel unique name**
+   $ vim [source code directory]/Makefile
 
-      Adding a patch to linux kernel source is something like adding a patch to general C project.
-      To add new function ``sayhello`` into C project, we need to add function prototype in the header file(``syscall.h``) and function definition in the C source file(``sayhello.c``).
-      To add new C source file ``sayhello.c`` into C project, we sometimes need to modify project build system config(``Makefile``) to add this c file.
-      Only a syscall table is the design we rarely found in general C project.
+.. figure:: pic/kernel_extra_version.png
+   :scale: 75%
+
+   **Figure 14. modify kernel extra version to give patched kernel unique name**
+
+Adding a patch to linux kernel source is something like adding a patch to general C project.
+To add new function ``sayhello`` into C project, we need to add function prototype in the header file(``syscall.h``) and function definition in the C source file(``sayhello.c``).
+To add new C source file ``sayhello.c`` into C project, we sometimes need to modify project build system config(``Makefile``) to add this c file.
+Only a syscall table is the design we rarely found in general C project.
 
 3. build and install new kernel
 """""""""""""""""""""""""""""""
 
-      A. clean project config file and building object(result and intermidiate executables and object codes)::
+A. clean project config file and building object(result and intermidiate executables and object codes)::
 
-            $ make mrproper clean
+      $ make mrproper clean
 
-            # ``make mrproper clean`` means ``make mrproper``, then ``make clean``. 
-            # ``make clean all`` or others are also using this rule.
+      # ``make mrproper clean`` means ``make mrproper``, then ``make clean``. 
+      # ``make clean all`` or others are also using this rule.
 
-      B. generate build config file (at ``.config``) of linux kernel source code. we use x86 default config here::
+B. generate build config file (at ``.config``) of linux kernel source code. we use x86 default config here::
 
-            $ make x86_64_defconfig
+      $ make x86_64_defconfig
 
-      C. build linux kernel executable, kernel image and linux kernel modules::
+C. build linux kernel executable, kernel image and linux kernel modules::
 
-            $ make vmlinux bzimage modules
-            # build kernel executable at vmlinux
-            # build kernel image at arch/x86/boot/bzImage
-            # build kernel modules at module's local directories
+      $ make vmlinux bzimage modules
+      # build kernel executable at vmlinux
+      # build kernel image at arch/x86/boot/bzImage
+      # build kernel modules at module's local directories
 
-            # or you can use multiprocess for faster parallel build
-            # using 4 process for example
-            $ make -j4 vmlinux bzimage modules
+      # or you can use multiprocess for faster parallel build
+      # using 4 process for example
+      $ make -j4 vmlinux bzimage modules
 
-      D. install kernel and kernel modules, and modify grub to add boot option of new kernel::
+D. install kernel and kernel modules, and modify grub to add boot option of new kernel::
 
-            $ sudo make modules_install install
-            # install kernel module at /lib/modules/3.19.0_sayhello
-            # install kernel at /boot/vmlinuz-3.19.0_sayhello
-            # with initramfs, kernel config, memtest, and System tap at /boot/
-            # add 3.19.0_sayhello kernel at boot option by modifying /boot/grub/grub.cfg
+      $ sudo make modules_install install
+      # install kernel module at /lib/modules/3.19.0_sayhello
+      # install kernel at /boot/vmlinuz-3.19.0_sayhello
+      # with initramfs, kernel config, memtest, and System tap at /boot/
+      # add 3.19.0_sayhello kernel at boot option by modifying /boot/grub/grub.cfg
 
-      E. setting boot option non-hidden and wait for 10 sec::
+E. setting boot option non-hidden and wait for 10 sec::
 
-            # add comments to GRUB_HIDDEN_TIMEOUT=0 at /etc/default/grub. see figure 15
-            $ sudo vim /etc/default/grub
+      # add comments to GRUB_HIDDEN_TIMEOUT=0 at /etc/default/grub. see figure 15
+      $ sudo vim /etc/default/grub
 
-            # apply update to /boot/grub/grub.cfg
-            $ sudo update-grub
+      # apply update to /boot/grub/grub.cfg
+      $ sudo update-grub
 
-         .. figure:: pic/grub_hidden_menu.png
-            :scale: 75%
+   .. figure:: pic/grub_hidden_menu.png
+      :scale: 75%
 
-            **Figure 15. close grub hidden menu**
+      **Figure 15. close grub hidden menu**
 
-      Every time you modify the kernel source (fix bug or ... etc), you can just repeat step C ~ E for building new kernel.
-      You do not need to run ``make clean`` if you just modify few code of kernel source without modifying ``Makefile``. You build it faster.
-      Otherwise, if you modify ``Makefile`` after running ``make clean``, please re-run ``make clean`` to remove the previous build object files.
+Every time you modify the kernel source (fix bug or ... etc), you can just repeat step C ~ E for building new kernel.
+You do not need to run ``make clean`` if you just modify few code of kernel source without modifying ``Makefile``. You build it faster.
+Otherwise, if you modify ``Makefile`` after running ``make clean``, please re-run ``make clean`` to remove the previous build object files.
 
-      run ``make help`` will help you learn more about make options of linux kernel source.
+run ``make help`` will help you learn more about make options of linux kernel source.
 
 4. reboot and running new kernel
 """"""""""""""""""""""""""""""""
 
-   .. figure:: pic/boot_menu1.png
-      :scale: 50%
+.. figure:: pic/boot_menu1.png
+   :scale: 50%
 
-      **Figure 16. grub boot menu**
+   **Figure 16. grub boot menu**
 
-   .. figure:: pic/boot_menu2.png
-      :scale: 50%
+.. figure:: pic/boot_menu2.png
+   :scale: 50%
 
-      **Figure 17. grub boot menu**
+   **Figure 17. grub boot menu**
 
 C. Invoke system call by the system call number (see Figure 18)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-   1. Include the following header files::
-      
-       #include <unistd.h>
-       #include <sys/syscall.h>
-      
-   2. Use function 'syscall' to invoke system call::
+1. Include the following header files::
+   
+    #include <unistd.h>
+    #include <sys/syscall.h>
+   
+2. Use function 'syscall' to invoke system call::
 
-       Usage: syscall(int [syscall number], [parameters to syscall])
+    Usage: syscall(int [syscall number], [parameters to syscall])
 
-      .. figure:: pic/use_syscall.png
-         :scale: 75%
+   .. figure:: pic/use_syscall.png
+      :scale: 75%
 
-         **Figure 18. invoke a system call in a program**
+      **Figure 18. invoke a system call in a program**
 
-      
-      For detailed information of syscall, please check Linux man pages::
+   
+   For detailed information of syscall, please check Linux man pages::
 
-         $ man syscall
+      $ man syscall
 
-   3. After running the code, you can use ``dmesg`` to see the messages output from printk (e.g. Figure 19)::
+3. After running the code, you can use ``dmesg`` to see the messages output from printk (e.g. Figure 19)::
 
-       $ dmesg
+    $ dmesg
 
-      .. figure:: pic/dmesg_log_syscall.png
-         :scale: 75%
+   .. figure:: pic/dmesg_log_syscall.png
+      :scale: 75%
 
-         **Figure 19. the ‘printk’ messages from ‘sayhello’ system call**
+      **Figure 19. the ‘printk’ messages from ‘sayhello’ system call**
 
 Section 3. x86_64 Page Table Structure and Address Translation
 --------------------------------------------------------------
@@ -552,7 +552,7 @@ The rest of translation is pretty much the same.
 You can finish the HW with only Section 3 message.
 
 Also, you can trace Linux kernel to understand these structures and functions more.
-Using LXR [8]_ or other tracing tool will help you trace it. See Appendix A. for example.
+LXR [8]_ is our good friend to trace linux kernel. See Appendix A. for example.
 
 Section 4. [Assignment] Adding a address translation system call and observe memory CoW technique
 -------------------------------------------------------------------------------------------------
