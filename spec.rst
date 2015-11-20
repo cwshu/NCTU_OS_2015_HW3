@@ -5,12 +5,11 @@ HW3 Virtual Memory Experiment
 
 Overview
 --------
-In this homework, we will carry two experiments to observe how shared memory works in Linux, to make us be more familiar with Virtual Memory System.
+In this homework, we will carry two experiments to observe how shared memory works in Linux and understand the virtual memory subsystem.
 
-To do these experiment, you should obtain kernel information, like physical memory address of our process, to check if two processes use same phyical memory page(frame).
-Therefore, we need to implement a system call in linux kernel to translate virtual address of process to physical address, and pass through it to user space. (Section 4 Part A)
+On Linux, the virtual memory subsystem is implemented in the OS kernel. To obtain the information such as the mapping of physical memory frames for a process, we will need access to data structures maintained by the kernel. Specifically, we will add a system call in the Linux kernel to translate virtual address to physical address, and pass through it to user space. (Section 4 Part A)
 
-Then, you will write two userspace programs to do experiment. (Section 4 Part B, C)
+Then, you will write two userspace programs to carry out the experiments. (Section 4 Part B, C)
 
 To do this homework, there are 3 tutorial sections.
 
