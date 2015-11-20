@@ -18,9 +18,9 @@ To help you with this homework, we also provide 3 tutorial sections (Section 1~3
 
 - In Section 2, we will show how to add a system call to linux kernel.
 
-- In Section 3, we will show how address translation takes place in x86_64 linux kernel.
+- In Section 3, we will present the x86_64 address translation process and point out the page table data structure implementations in the linux kernel.
 
-If you know how to do them, you can jump to Section 4 for homework requirement and example code.
+If you already have some idea on these, you can directly jump to Section 4 for the homework requirement and example code.
 
 Section 1. Process Memory Layout
 --------------------------------
