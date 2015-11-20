@@ -20,44 +20,37 @@ To help you with this homework, we also provide 3 tutorial sections (Section 1~3
 
 - In Section 3, we will present the x86_64 address translation process and point out the page table data structure implementations in the linux kernel.
 
-If you already have some idea on these, you can directly jump to Section 4 for the homework requirement and example code.
+If you already have some idea on these, you can directly jump to Section 4 for the homework assignment.
 
 Section 1. Process Memory Layout
 --------------------------------
 
-In Section 1, we will discuss about how process use memory, and give some tools to observe it.
+In Section 1, we will discuss about how process uses memory and introduce some tools for observing it.
 
-A. Theoritcal Process Memory Layout
+A. Basic Process Memory Layout
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-In the theoretical memory layout, we know the memory of our process is divided into 4 parts. 
+Basically, the memory of a process can be divided into 4 parts. 
 
 .. figure:: pic/theoretical_mem_layout.png
    :scale: 100%
 
    **Figure 1. theorical memory layout of process**
 
-1. Code segment, which consist of all functions in the program except shared libraries.
+1. Code segment, which stores the code of the program except shared libraries.
 2. Data segment, which stores global and static variables except shared libraries.
-3. Stack segment, which stores local variables including function parameters. It is also named call stack.
+3. Stack segment, which stores local variables including function parameters. It is also know as the call stack.
 4. Heap segment, which is used for dynamic memory allocation(malloc/free).
 
-In current linux implemetation(Linux 3.x & 4.x), each segment should be contiguous memory in **virtual address space**, and must be consist of numbers of memory pages.
-Also linux has more segments than theoretical memory layout, we will discuss it later.
+In current linux implemetation(Linux 3.x & 4.x), each segment should be a contiguous memory block in **virtual address space**.
+In a real-world system such as Linux, there may be multiple segments for each type of segment.
 
-In this memory layout, code is seperate from data for different purpose and permission(e.g. Data Execution Prevention).
-3 segment of data memory is divided for different lifetime, which due to the difference in memory allocation time.
-
-1. Data segment is from program start to program end. It's size is decided at compile time.
-2. Stack segment is from function call to function return. Stack allocation is dynamic, but more restrict and faster than heap allocation.
-3. Heap segment is from malloc library call to free library call. Heap allocation is the most flexible dynamic allocation with relatively high overhead.
-
-By knowing the memory layout and lifetime, we can know why we won't return pointer of local variable in C function, understand the precise time when variable's destructor is driven in C++. 
+Different segments may carry different permissions. For instance, data segments usually do not allow code execution (i.e. Data Execution Prevention).
 
 B. Process Memory Layout in Linux
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The Figure 2 below is the virtual memory layout of process in 32 bits Linux system. To explain this, we should talk about an important concept, shared library first.
+Figure 2 shows the virtual memory layout of a process in 32 bits Linux system. To explain this, we should talk about an important concept, shared library first.
 
 The library is a set of functions which doesn't have entry point(e.g. main function). [1]_
 In other words, all of object code except one having main function can be seemed as a library. 
