@@ -110,15 +110,13 @@ We will run a simple program and observe its memory layout.
 
       **Figure 3. process memory layout of hello program**
 
-4. read it.
+4. read the layout.
 
-   Before reading it, I will tell some concept of VMA(Virtual Memory Area).
+   Each line of the layout corresponds to a VMA (Virtual Memory Area).
 
-   VMA is the most similar thing to the concept of "segments" in linux kernel implementation.
+   VMA is very similar thing to the concept of "segments" in linux kernel implementation.
 
-   VMA is a contiguous range of virtual addresses that have the same permission flags, 
-   and one VMA should be mapped to same file if it has memory mapping.
-   each line in procfs map is a single VMA.
+   VMA is a contiguous range of virtual addresses that have the same permission flags.
 
    The fields in each line are::
    
@@ -137,7 +135,7 @@ We will run a simple program and observe its memory layout.
    
    - ``inode``, ``image``, ``offset``
 
-      If the file mapping to this memory (sometimes caused by ``mmap`` syscall), these value are about mapped file.
+      If there is a file mapping to this VMA (sometimes caused by ``mmap`` syscall), these value are about the mapped file.
       File's inode, file path, and the starting file offset mapping to this memory.
 
       ``man mmap`` for more infomation.
@@ -147,7 +145,7 @@ We will run a simple program and observe its memory layout.
       device number [4]_ for device holding memory mapped file. doesn't discussed in this HW.
 
    a. First, find the process name. it is code and data segment of your program.
-      Code and Data segment infomation are stored in executable file, which is ELF format in linux.
+      Code and Data segment infomation are stored in executable file (in ELF format).
       It is memory mapped from executable file to memory, so the procfs show the name of executable in these VMAs.
 
       We can use permission to distinguish each other.
