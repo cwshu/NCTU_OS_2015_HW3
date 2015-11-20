@@ -5,7 +5,7 @@ HW3 Virtual Memory Experiment
 
 Overview
 --------
-In this homework, we will do two experiments to observe the memory sharing mechanisms in Linux OS, to make us be more familiar with Virtual Memory System.
+In this homework, we will carry two experiments to observe how shared memory works in Linux, to make us be more familiar with Virtual Memory System.
 
 To do these experiment, you should obtain kernel information, like physical memory address of our process, to check if two processes use same phyical memory page(frame).
 Therefore, we need to implement a system call in linux kernel to translate virtual address of process to physical address, and pass through it to user space. (Section 4 Part A)
