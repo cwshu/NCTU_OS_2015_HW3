@@ -142,11 +142,11 @@ We will run a simple program and observe its memory layout.
      
    - ``major``, ``minor``
 
-      device number [4]_ for device holding memory mapped file. doesn't discussed in this HW.
+      device number [4]_ for device holding memory mapped file. This is not discussed in this HW.
 
-   a. First, find the process name. it is code and data segment of your program.
+   a. First, find the process name. it can point you to the code and data segments of your program.
       Code and Data segment infomation are stored in executable file (in ELF format).
-      It is memory mapped from executable file to memory, so the procfs show the name of executable in these VMAs.
+      It is memory mapped from the executable file to memory, so the procfs show the name of executable in these VMAs.
 
       We can use permission to distinguish each other.
       Code segment has read and execute permission.
@@ -170,7 +170,7 @@ We will run a simple program and observe its memory layout.
 
    c. Third, shared libraries
     
-      Like process name, shared libraries.
+      Like process name, shared libraries can be easily identified by the library file names.
       ::
 
          7fde68109000-7fde682a4000 r-xp 00000000 08:06 8787453  /usr/lib/libc-2.22.so
@@ -184,8 +184,8 @@ We will run a simple program and observe its memory layout.
          7fde686ce000-7fde686cf000 r--p 00021000 08:06 8787452  /usr/lib/ld-2.22.so
          7fde686cf000-7fde686d0000 rw-p 00022000 08:06 8787452  /usr/lib/ld-2.22.so
 
-      libc.so is standard C library, consist of implementation of ``printf()``, ``fopen()``. [5]_
-      ld.so is the dynamic linker/loader, which help you to dynamic loading other shared libraries. [6]_
+      libc.so is standard C library, which includes implementation of ``printf()``, ``fopen()``. [5]_
+      ld.so is the dynamic linker/loader, for dynamic loading of other shared libraries. [6]_
 
       ``ldd`` can help you know the shared library dependency of executable.::
 
