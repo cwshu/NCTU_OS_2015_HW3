@@ -35,7 +35,7 @@ Basically, the memory of a process can be divided into 4 parts.
 .. figure:: pic/theoretical_mem_layout.png
    :scale: 100%
 
-   **Figure 1. theorical memory layout of process**
+   **Figure 1. basic memory layout of a process**
 
 1. Code segment, which stores the code of the program except shared libraries.
 2. Data segment, which stores global and static variables except shared libraries.
@@ -50,18 +50,7 @@ Different segments may carry different permissions. For instance, data segments 
 B. Process Memory Layout in Linux
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Figure 2 shows the virtual memory layout of a process in 32 bits Linux system. To explain this, we should talk about an important concept, shared library first.
-
-The library is a set of functions which doesn't have entry point(e.g. main function). [1]_
-In other words, all of object code except one having main function can be seemed as a library. 
-Some of libraries you use will be linked into executable at the end of compilation time(more precisely, link time).
-That is called static library.
-Different from static library, The shared library isn't linked into executable at compile time.
-Shared library would be marked into executable at compilation time(more precisely, link time), and be loaded at runtime. [2]_
-
-Because shared libraries and their memory segments are both seperated from executable, their memory segments are easily shared between different processes if processes use same libraries. That is why they are called "shared" libraries.
-
-Also because shared libraries are seperated from executable, they have independent code and data segment.
+Figure 2 shows the virtual memory layout of a process in 32 bits Linux system. 
 
 .. figure:: pic/linuxFlexibleAddressSpaceLayout.png
 
@@ -69,17 +58,21 @@ Also because shared libraries are seperated from executable, they have independe
 
 In Figure 2. 
 
-1. Text segment is corresponding to code segment which consist of function.
-2. Data and bss segment is corresponding to data segment, bss segment is for uninitialized global variable.
-3. Heap segment and stack segment is also corresponding to stack and heap segment.
-4. Memory mapping segments is consist of many segments, which usually used for shared libraries' code and data segment. [3]_
+1. Text segment corresponds to the code segment as in the basic process memory layout.
+2. Data and bss segment corresponds to the data segments, where bss segment stores uninitialized global variable.
+3. Heap segment and stack segment are idential that in the basic process memory layout.
+4. Memory mapping segment consists of many segments, which is usually used for shared libraries' code and data segment. [3]_
 5. ``RLIMIT_STACK`` is the maximum size of stack. If stack size is larger than that, stack overflow will occur. you can use ``ulimit`` to control ``RLIMIT_STACK`` for each user in Linux.
 6. Random offset is a security policy called ASLR(Address Space Layout Randomization). We won't discuss it in this HW.
+
+Part of the program code of a process may exist in library forms. Static libraries are linked into the executable at compilation time while shared libraries are loaded at runtime [2]. As we will see in the homework, a shared library can be shred by multiple processes. That is why they are called "shared" libraries.
+
+Also because shared libraries are seperate from the main executable, they have independent code and data segments.
 
 C. Process Memory Layout of Real Process in Linux (using procfs to observe)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-After introduction, we will start run simple program and observe the virtual memory layout of it.
+We will run a simple program and observe its memory layout.
 
 1. compile and run the first program in C
 
