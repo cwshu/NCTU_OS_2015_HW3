@@ -7,18 +7,18 @@ Overview
 --------
 In this homework, we will carry two experiments to observe how shared memory works in Linux and understand the virtual memory subsystem.
 
-On Linux, the virtual memory subsystem is implemented in the OS kernel. To obtain the information such as the mapping of physical memory frames for a process, we will need access to data structures maintained by the kernel. Specifically, we will add a system call in the Linux kernel to translate virtual address to physical address, and pass through it to user space. (Section 4 Part A)
+On Linux, the virtual memory subsystem is implemented in the OS kernel. To obtain the information such as the mapping of physical memory frames for a process, we will need access to data structures maintained by the kernel. Specifically, we will add a Linux system call to translate virtual address to physical address. (Section 4 Part A)
 
 Then, you will write two userspace programs to carry out the experiments. (Section 4 Part B, C)
 
-To do this homework, there are 3 tutorial sections.
+To help you with this homework, we also provide 3 tutorial sections (Section 1~3).
 
-- In Section 1, we will tell about how to get process memory layout in Linux by procfs.
-  We also discuss about shared libraries in memory layout, so we'll handcraft a simple shared library.
+- In Section 1, we will show how to get the process memory layout via procfs.
+  We also also demonstrate how shared libraries are structured in the memory layout by creating a simple shared library.
 
-- In Section 2, we will give you a guide for how to add a system call in linux kernel.
+- In Section 2, we will show how to add a system call to linux kernel.
 
-- In Section 3, we will show you how address translation take place in x86_64 linux kernel.
+- In Section 3, we will show how address translation takes place in x86_64 linux kernel.
 
 If you know how to do them, you can jump to Section 4 for homework requirement and example code.
 
