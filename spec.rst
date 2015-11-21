@@ -535,12 +535,12 @@ You can finish the HW with only Section 3 message.
 Also, you can trace Linux kernel to understand these structures and functions more.
 LXR [8]_ is our good friend to trace linux kernel. See Appendix A. for example.
 
-Section 4. [Assignment] Adding a address translation system call and observe memory CoW technique
+Section 4. [Assignment] Adding an address translation system call and observing copy-on-write and page sharing
 -------------------------------------------------------------------------------------------------
 
-Part A. add a address translation system call and confirm it by basic fork-CoW example.
+Part A. add an address translation system call and confirm it with child process forking and memory copy-on-write.
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-NOTE: For all example code, please modify system call number(Macro ``SYSCALL_NUM_LOOKUP_PADDR``) to match the number you add to kernel system call table.
+NOTE: For all example code, please modify system call number(Macro ``SYSCALL_NUM_LOOKUP_PADDR``) to match the actual system  call number you used for the custom system call in the system call table.
 
 You’ve learned in the class that the fork system call can be used to create a child process.
 In essence, the fork system call creates a separate address space for the child process.
@@ -550,18 +550,15 @@ As a result, to reduce the overhead of memory copying, most fork implementation 
 The memory pages of the child process are initially mapped to the same physical frames of the parent process.
 Only when a child process memory page is about to be overwritten, will a new physical copy of that be created, so the modification on that page by one process will not be seen by the other process.
 
-In the Part A, you are asked to verify the copy-on-write behavior of fork system call.
-Specifically, you need to complete one task.
+In Part A, you need to implment the address translation system call that translates a virtual address to the corresponding physical address. Then, 
+you need to observe the copy-on-write behavior of fork system call and check if your address translation system call is working properly.
 
-**Implement a custom system call to translate a virtual address to physical address.**
-
-You first need to implement a system call that translates a virtual address to the corresponding physical address.
-The inputs are ``pid`` (process id) and a ``virtual address``.
+For the address translation system call, it will take two inputs, which are ``pid`` (process id) and a ``virtual address``.
 A template (named ``PartA_kernel_patch/lookup_paddr.c``) will help you complete the task.
 You just need to add the necessary code in it, integrate the template file into the kernel source, and rebuild the kernel.
 You can then test the effect of the system call following the same steps in Section 2.
 
-``PartA_user_test_program/basic_fork_ex.c`` is testing code for this system call. You need to verify the correctness of system call by it.
+``PartA_user_test_program/basic_fork_ex.c`` is the user-level test program that you will use for testing your system call. To verify the correctness of the address translation system call, 
 This example confirm that "fork" uses copy-on-write in the creation of child process address space, using heap segment as example.
 
 The expected evaluation is like Figure 25.
