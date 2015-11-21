@@ -146,11 +146,11 @@ We will run a simple program and observe its memory layout.
 
    a. First, find the process name. it can point you to the code and data segments of your program.
       Code and Data segment infomation are stored in executable file (in ELF format).
-      It is memory mapped from the executable file to memory, so the procfs show the name of executable in these VMAs.
+      It is memory mapped from the executable file to the memory, so the procfs shows the name of the executable corresponding to these VMAs.
 
-      We can use permission to distinguish each other.
-      Code segment has read and execute permission.
-      Data segment has read and write permission.
+      We can also use permissions to distinguish the VMAs.
+      Code segments would have read and execute permission.
+      Data segments typically have read and write permission.
 
       Code and Data segment are both 0x1000 bytes, which means they only have one 4KB page in their memory segment.
 
