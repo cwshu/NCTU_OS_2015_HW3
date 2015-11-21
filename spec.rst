@@ -553,23 +553,21 @@ Only when a child process memory page is about to be overwritten, will a new phy
 In Part A, you need to implment the address translation system call that translates a virtual address to the corresponding physical address. Then, 
 you need to observe the copy-on-write behavior of fork system call and check if your address translation system call is working properly.
 
-For the address translation system call, it will take two inputs, which are ``pid`` (process id) and a ``virtual address``.
+For the address translation system call, it should take two inputs, which are ``pid`` (process id) and a ``virtual address``. The output is the corresponding physical address.
 A template (named ``PartA_kernel_patch/lookup_paddr.c``) will help you complete the task.
 You just need to add the necessary code in it, integrate the template file into the kernel source, and rebuild the kernel.
 You can then test the effect of the system call following the same steps in Section 2.
 
-``PartA_user_test_program/basic_fork_ex.c`` is the user-level test program that you will use for testing your system call. To verify the correctness of the address translation system call, 
-This example confirm that "fork" uses copy-on-write in the creation of child process address space, using heap segment as example.
+``PartA_user_test_program/basic_fork_ex.c`` is the user-level test program that you will use for testing your system call. To verify the correctness of the address translation system call, the program will allocate a variable ``mem_alloc`` on the heap. It will then use fork to create a child process and modify the value of the variable. 
 
-The expected evaluation is like Figure 25.
+You should observation something like Figure 25.
 
 .. figure:: pic/fork_ex_evalutation.png
    :scale: 75%
     
    **Figure 25. basic fork example for CoW strategy**
 
-The virtual addresses of parent and child processes are initially the same. This is as expected.
-After the child modifies the value of the variable ``mem_alloc`` we can see that the memory pages of the parent and the child processes bear different values. 
+The virtual addresses for the variable ``mem_alloc`` are identical in the parent process and in the child process. This is expected as fork will create a copy of the parent memory content for the child. The physical addresses are the same as well, which indicate that the underying memory pages are shared (so the copy is actually a 'logical copy'). However, after the child modifies the value of the variable ``mem_alloc``, we can see that the memory pages of the parent and the child processes bear different values, and more importantly, the physical addresses for ``mem_alloc`` are now different.
 However, their virtual addresses are still the same.
 
 Part B. copy-on-write in stack and heap segment, CoW per page
