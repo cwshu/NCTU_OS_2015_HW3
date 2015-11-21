@@ -187,7 +187,7 @@ We will run a simple program and observe its memory layout.
       libc.so is standard C library, which includes implementation of ``printf()``, ``fopen()`` [5]_. 
       ld.so is the dynamic linker/loader, for dynamic loading of other shared libraries. [6]_
 
-      ``ldd`` can help you know the shared library dependency of executable.::
+      ``ldd`` can detetermin the shared library dependencies of an executable.::
 
          # dependency of hello.out
          $ ldd hello.out
@@ -199,7 +199,6 @@ We will run a simple program and observe its memory layout.
          # ldd <executable path of ls>
          $ ldd `which ls`
        
-   d. Last, others, doesn't discuss in this HW
 
 5. close the program::
 
@@ -208,12 +207,11 @@ We will run a simple program and observe its memory layout.
 
       <ENTER> to finish the program.
 
-Then, run second program(sorting_number.out) with same step, you will observe heap.
-The malloc size of second program is decided by arguments.::
+Then, you may run the second program(sorting_number.out) to observe heap memory allocation.
 
     $ ./sorting_number [num] # malloc num*sizeof(int) byte
 
-At last, run third program, we can observe relation between C pointer address and procfs's virtual memory address::
+At last, you may run the third program, we can observe relation between C pointer address and procfs's virtual memory address::
 
     $ cd process_in_memory/
 
@@ -252,7 +250,7 @@ D. [Supplement] How to build a shared library
 
 Reference [2]_ is our good friend. :)
 
-Section 2. Adding a new system call in Linux Kernel
+Section 2. Adding a new Linux system call
 ---------------------------------------------------
 
 Modern operating systems such as Windows and Linux are structured into two spaces: user space and kernel space.
@@ -292,8 +290,8 @@ A. find the kernel version::
 
 B. download kernel source
 
-   In this homework, we use vanilla linux kernel instead of distribution kernel because we only do something simple.
-   So, we should go to linux kernel maintain site(``kernel.org``) to download kernel source.
+   In this homework, we use vanilla linux kernel instead of distribution kernels for simplicity.
+   The vanilla Linux kernel can be downloaded from (``kernel.org``).
 
    ``kernel.org`` website
 
