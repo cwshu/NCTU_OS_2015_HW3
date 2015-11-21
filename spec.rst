@@ -602,18 +602,18 @@ The expected evaluation is like Figure 26 ~ 28. Heap buffer1 and buffer2 are bot
 Part C. shared library
 ~~~~~~~~~~~~~~~~~~~~~~
 
-At last, instead of CoW strategy, we will observe the sharing of shared library.
-We both know a sharing library in the memory can be divided to code and data segment, only the code segment is always shared.
+At last, we will take a look a look at how shared library is mapped in the memory address space.
+We both know a shared library in the memory consists of code and data segments, only the code segment is always shared.
 
 To verify it, you are asked to write a program with a handmake shared library (Section 1). 
-This program do a fork and write to shared library data segment, then printing physical address of shared library's code and data segment for both parent and child process.
-Then we'll found same physical address in code segment and different physical address in data segment.
+This program will fork a child process write to the shared library's data segment, and print the physical address of shared library's code and data segment for both parent and child process. [這應該是一個range? 同學可能會不確定print the physical address是要印哪一個位址]
+Then we'll found same physical address in code segment and different physical address in data segment [這句話我看不太懂].
 
-There isn't a template in this part. 
+There is no template for this part. You have to work on your own.
 
-You can use Section 1 example (``process_in_memory``) as basement, and use the experience in Section 4 Part A, B (address translation system call) to finish this part by yourself.
+You can use Section 1 example (``process_in_memory``) as the base, and rely on knowledge gained in Section 4 Part A and B (address translation system call) to finish this part by yourself.
 
-The expected evaluation is like Figure 29.
+The expected output from your program should look like Figure 29.
 
 .. figure:: pic/shared_library_evaluation.png
    :scale: 75%
