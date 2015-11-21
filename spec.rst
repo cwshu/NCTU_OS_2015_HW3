@@ -184,7 +184,7 @@ We will run a simple program and observe its memory layout.
          7fde686ce000-7fde686cf000 r--p 00021000 08:06 8787452  /usr/lib/ld-2.22.so
          7fde686cf000-7fde686d0000 rw-p 00022000 08:06 8787452  /usr/lib/ld-2.22.so
 
-      libc.so is standard C library, which includes implementation of ``printf()``, ``fopen()``[5]_. 
+      libc.so is standard C library, which includes implementation of ``printf()``, ``fopen()`` [5]_. 
       ld.so is the dynamic linker/loader, for dynamic loading of other shared libraries. [6]_
 
       ``ldd`` can help you know the shared library dependency of executable.::
