@@ -315,16 +315,16 @@ B. download kernel source
 
            Figure 9.
 
-   - download ``tar.gz`` or ``tar.xz`` (they are only different from encryption method)
-   - unpack and decryption::
+   - download ``tar.gz`` or ``tar.xz`` (they are only different in terms of compression formats)
+   - Decompress and unpack::
 
         $ tar -xvf linux-3.19.tar.gz
-        # decrypt directory linux-3.19/ at current working directory.
+        # This will decompress and unpack kernel source to directory linux-3.19/ at current working directory.
 
-2. Add kernel patch to kernel source
+2. Adding custom system call
 """"""""""""""""""""""""""""""""""""
    
-A. Add a custom system call to the syscall table (see Figure 10)::
+A. Define the custom system call in the syscall table (see Figure 10)::
 
    $ vim [source code directory]/arch/x86/syscalls/syscall_64.tbl
 
@@ -342,25 +342,25 @@ B. Add the system call function prototype to the syscall interface (see Figure 1
 
    **Figure 11. add the system call ‘sayhello’ function prototype to the syscall interface**
 
-C. Implement the custom system call definition (see Figure 12)::
+C. Implement the custom system call function definition (see Figure 12)::
 
    $ vim [source code directory]/kernel/sayhello.c
 
 .. figure:: pic/syscall_definition.png
    :scale: 75%
   
-   **Figure 12. implement the system call ‘sayhello’**
+   **Figure 12. Implementation of the system call ‘sayhello’**
 
-D. Modify the Makefile, add system call definition to build system config(e.g. Figure 13)::
+D. Include the custom system call into kernel build steps (e.g. Figure 13)::
 
    $ vim [source code directory]/kernel/Makefile
 
 .. figure:: pic/kernel_makefile.png
    :scale: 75%
 
-   **Figure 13. modify the Makefile**
+   **Figure 13. Include the custom system call module in the kernel Makefile**
 
-E. [important to do] giving the patched kernel unique name, for easily install in next step (see Figure 14.)::
+E. [IMPORTANT] Give the new kernel a unique name, for making follow-up installation steps easier (see Figure 14.)::
 
    $ vim [source code directory]/Makefile
 
