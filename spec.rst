@@ -30,7 +30,7 @@ In Section 1, we will discuss about how process uses memory and introduce some t
 A. Basic Process Memory Layout
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Basically, the memory of a process can be divided into 4 parts. 
+Basically, the memory of a process can be divided into 4 parts.
 
 .. figure:: pic/theoretical_mem_layout.png
    :scale: 100%
@@ -50,13 +50,13 @@ Different segments may carry different permissions. For instance, data segments 
 B. Process Memory Layout in Linux
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Figure 2 shows the virtual memory layout of a process in 32 bits Linux system. 
+Figure 2 shows the virtual memory layout of a process in 32 bits Linux system.
 
 .. figure:: pic/linuxFlexibleAddressSpaceLayout.png
 
    **Figure 2. 32 bits Linux process memory layout**
 
-In Figure 2. 
+In Figure 2.
 
 1. Text segment corresponds to the code segment as in the basic process memory layout.
 2. Data and bss segment corresponds to the data segments, where bss segment stores uninitialized global variable.
@@ -87,7 +87,7 @@ We will run a simple program and observe its memory layout.
 2. get the process id of our program
 
    ::
-    
+
      # <Ctrl-Z> to suspend program, so you can run another command.
      # dump the process snapshot(ps), and find the pid of our process (grep by process name)
 
@@ -123,14 +123,14 @@ We will run a simple program and observe its memory layout.
    Each VMA is a contiguous range of virtual addresses that have the same permission flags, and it is consist of multiple memory pages.
 
    The fields in each line are::
-   
+
        start-end perm offset major:minor inode image
 
        e.g.
        00400000-00401000 r-xp 00000000 08:06 2490469 /home/susu/workspace/2015_OS_hw3/partA/hello.out
-     
+
    - ``start``, ``end``
-    
+
       The beginning and ending virtual addresses for this VMA.
       The size of VMA should be multiple of memory page's size (e.g. 4KB in x86_64).
 
@@ -149,7 +149,7 @@ We will run a simple program and observe its memory layout.
       (``inode``, ``image``, ``offset``) = (file's inode, file path, the starting file offset mapping to this memory)
 
       ``man mmap`` for more infomation.
-     
+
    - ``major``, ``minor``
 
       device number [#]_ for device holding memory mapped file. This is not discussed in this HW.
@@ -164,7 +164,7 @@ We will run a simple program and observe its memory layout.
 
       Code and Data segment are both 0x1000 bytes, which means they only have one 4KB page in their memory segment.
 
-      :: 
+      ::
 
          00400000-00401000 r-xp 00000000 08:06 2490469          /home/susu/workspace/2015_OS_hw3/partA/hello.out
          00600000-00601000 rw-p 00000000 08:06 2490469          /home/susu/workspace/2015_OS_hw3/partA/hello.out
@@ -174,16 +174,16 @@ We will run a simple program and observe its memory layout.
       Stack segment has read and write permission. It is same as Data segment.
 
       segment size = 0x7ffdf1cb1000 - 0x7ffdf1c90000 = 0x21000, so it is consist of thirty three 4KB pages in stack segment.
-      :: 
+      ::
 
          7ffdf1c90000-7ffdf1cb1000 rw-p 00000000 00:00 0        [stack]
 
    c. Third, shared libraries
-    
+
       Like process name, shared libraries can be easily identified by the library file names.
 
       We can also use permissions to distinguish between code segment and data segment of shared libraries.
-      
+
       The special one is the VMA only with read permission, which is typically used for read-only data segment(i.e. ``.rodata``).
       ::
 
@@ -191,14 +191,14 @@ We will run a simple program and observe its memory layout.
          7fde682a4000-7fde684a3000 ---p 0019b000 08:06 8787453  /usr/lib/libc-2.22.so
          7fde684a3000-7fde684a7000 r--p 0019a000 08:06 8787453  /usr/lib/libc-2.22.so
          7fde684a7000-7fde684a9000 rw-p 0019e000 08:06 8787453  /usr/lib/libc-2.22.so
-         7fde684a9000-7fde684ad000 rw-p 00000000 00:00 0 
+         7fde684a9000-7fde684ad000 rw-p 00000000 00:00 0
          7fde684ad000-7fde684cf000 r-xp 00000000 08:06 8787452  /usr/lib/ld-2.22.so
-         7fde68691000-7fde68694000 rw-p 00000000 00:00 0 
-         7fde686cc000-7fde686ce000 rw-p 00000000 00:00 0 
+         7fde68691000-7fde68694000 rw-p 00000000 00:00 0
+         7fde686cc000-7fde686ce000 rw-p 00000000 00:00 0
          7fde686ce000-7fde686cf000 r--p 00021000 08:06 8787452  /usr/lib/ld-2.22.so
          7fde686cf000-7fde686d0000 rw-p 00022000 08:06 8787452  /usr/lib/ld-2.22.so
 
-      libc.so is standard C library, which includes implementation of ``printf()``, ``fopen()`` [#]_. 
+      libc.so is standard C library, which includes implementation of ``printf()``, ``fopen()`` [#]_.
 
       ld.so is the dynamic linker/loader, for dynamic loading of other shared libraries. [#]_
 
@@ -213,7 +213,7 @@ We will run a simple program and observe its memory layout.
          $ which ls
          # ldd <executable path of ls>
          $ ldd `which ls`
-       
+
 
 5. close the program::
 
@@ -234,15 +234,15 @@ At last, you may run the third program, we can observe relation between C pointe
     $ cd process_in_memory/
 
     # build a program process_in_memory and a shared library libpim.so.1
-        # p.s. 
-        # we can ignore the warning message of compilation (%0p is non-standard C style). 
+        # p.s.
+        # we can ignore the warning message of compilation (%0p is non-standard C style).
         # If you want to know how to prevent this warning message, see Section4 PartB template code.
     $ make clean all
 
     # set library path to current working directory, so loader can find shared library libpim.so.1.
     # set library path inlinely, and running a program.
         # p.s. This inline environment variable syntax is bash(default in linux) only syntax, other shell use different ones.
-    $ LD_LIBRARY_PATH=`pwd` ./process_in_memory    
+    $ LD_LIBRARY_PATH=`pwd` ./process_in_memory
 
     # suspend program and get process memory layout
     $ <Ctrl-Z>
@@ -264,7 +264,7 @@ We can found the program print variable address ``0x600cfc`` in data segment, an
 
 In the same way, we can found executable and shared library's code/data/stack/heap segment location in procfs map.
 
-Printing code segment is using a technique named inline assembly. 
+Printing code segment is using a technique named inline assembly.
 Use it to running x86 assembly code in C code to print processor's program counter register (register ``rip`` in x86_64).
 
 D. [Supplement] How to build a shared library
@@ -300,7 +300,7 @@ A. Use ``strace`` to trace the system calls made by the ``ls`` command
 
    ``man 2 <syscall_name> # e.g. man 2 brk`` tells us the meaning of system calls.
 
-p.s. ``strace`` is a helpful tool to observe the system or process behavior. 
+p.s. ``strace`` is a helpful tool to observe the system or process behavior.
 For example related to this homework, we can understand how to use system call to load shared libraries into memory by ``strace``. [#]_
 
 B. Add a custom system call
@@ -327,7 +327,7 @@ B. download kernel source
 
            Figure 7.
 
-   - Go to location to download from HTTP 
+   - Go to location to download from HTTP
 
         .. figure:: pic/kernel_org_http.png
            :scale: 50%
@@ -350,20 +350,20 @@ B. download kernel source
 
 2. Adding custom system call
 """"""""""""""""""""""""""""
-   
+
 A. Define the custom system call in the syscall table (see Figure 10)::
 
    $ vim [source code directory]/arch/x86/syscalls/syscall_64.tbl
 
 .. figure:: pic/syscall_table.png
    :scale: 75%
-  
+
    **Figure 10. add a system call ‘sayhello’ to syscall table**
 
 B. Add the system call function prototype to the syscall interface (see Figure 11)::
 
    $ vim [source code directory]/include/linux/syscalls.h
-   
+
 .. figure:: pic/syscall_prototype.png
    :scale: 75%
 
@@ -375,7 +375,7 @@ C. Implement the custom system call function definition (see Figure 12)::
 
 .. figure:: pic/syscall_definition.png
    :scale: 75%
-  
+
    **Figure 12. Implementation of the system call ‘sayhello’**
 
 D. Include the custom system call into kernel build steps (e.g. Figure 13)::
@@ -408,7 +408,7 @@ A. clean project config file and building object(result and intermidiate executa
 
       $ make mrproper clean
 
-      # ``make mrproper clean`` means ``make mrproper``, then ``make clean``. 
+      # ``make mrproper clean`` means ``make mrproper``, then ``make clean``.
       # ``make clean all`` or others are also using this rule.
 
 B. generate build config file (at ``.config``) of linux kernel source code. we use x86 default config here::
@@ -470,10 +470,10 @@ C. Invoke system call by the system call number (see Figure 18)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 1. Include the following header files::
-   
+
     #include <unistd.h>
     #include <sys/syscall.h>
-   
+
 2. Use function 'syscall' to invoke system call::
 
     Usage: syscall(int [syscall number], [parameters to syscall])
@@ -483,7 +483,7 @@ C. Invoke system call by the system call number (see Figure 18)
 
       **Figure 18. invoke a system call in a program**
 
-   
+
    For detailed information of syscall, please check Linux man pages::
 
       $ man syscall
@@ -521,8 +521,8 @@ We will demonstrate how a virtual address is translated into a physical address 
 Figure 21 is the page table structure on x86_64.
 You can see that there are 4 levels of address translation.
 Figure 22 shows how a virtual address gets converted to the physical address.
-(Note. 
-You can observe that there are 9 bits for each offset(except address offset). 
+(Note.
+You can observe that there are 9 bits for each offset(except address offset).
 This means that there are 512(2^9) entries in one page table (Because each page is 4K bytes, that means each page table entry is 64 bits).
 
 .. figure:: pic/va_to_pa.png
@@ -551,10 +551,10 @@ Linux kernel has some useful functions and structures (defined in ``arch/x86/inc
    **Figure 23. Functions of address translation in Linux**
 
 .. figure:: pic/example_of_address_translation.png
-   
+
    **Figure 24. Example of address translation**
 
-Figure 24 is an example of how to lookup the first level page table. 
+Figure 24 is an example of how to lookup the first level page table.
 The rest of translation is pretty much the same.
 
 You can finish the HW with only Section 3 message.
@@ -584,16 +584,16 @@ After finishing it, just write a simple report.
 For the address translation system call, it should take two inputs, which are ``pid`` (process id) and a ``virtual address``.
 The output is the corresponding physical address.
 
-The system call implementation is at ``PartA_kernel_patch/lookup_paddr.c``. 
+The system call implementation is at ``PartA_kernel_patch/lookup_paddr.c``.
 You just need to add it to linux kernel and rebuild it. Follow the same steps in Section 2.
 
-``PartA_user_test_program/basic_fork_ex.c`` is the user-level test program that you will use for testing your system call. To verify the correctness of the address translation system call, the program will allocate a variable ``mem_alloc`` on the heap. It will then use fork to create a child process and modify the value of the variable. 
+``PartA_user_test_program/basic_fork_ex.c`` is the user-level test program that you will use for testing your system call. To verify the correctness of the address translation system call, the program will allocate a variable ``mem_alloc`` on the heap. It will then use fork to create a child process and modify the value of the variable.
 
 You should observation something like Figure 25.
 
 .. figure:: pic/fork_ex_evalutation.png
    :scale: 75%
-    
+
    **Figure 25. basic fork example for CoW strategy**
 
 The virtual addresses for the variable ``mem_alloc`` are identical in the parent process and in the child process.
@@ -617,12 +617,12 @@ However, their virtual addresses are still the same.
 
    Thus, two memory pages of process in virtual address space both have 4 memory pages in page table.
 
-   Question: Do they totally use 8 pages in page table, or they may share some pages in page table? 
+   Question: Do they totally use 8 pages in page table, or they may share some pages in page table?
 
 2. [Advanced] 10% grade
 
    Given a process has two memory pages in virtual address space::
-   
+
        00400000-00401000 r-xp 00000000 08:01 1315847  <file_path>
        00600000-00601000 r--p 00000000 08:01 1315847  <file_path>
 
@@ -648,7 +648,7 @@ However, their virtual addresses are still the same.
 
    The picture will be like Figure 21, but with memory address and index on each page.
 
-   Also, Figure 21 is just a page table with single memory page in virtual address space. 
+   Also, Figure 21 is just a page table with single memory page in virtual address space.
    2 memory pages in virtual address space is more complex.
 
    Hint 1: You can use the virtual address in the address of 1st level of page table, because the log just print the virtual address
@@ -695,7 +695,7 @@ However, does a new process really consume zero memory for using existing shared
 We both know a shared library in the memory consists of code and data segments(Section 1).
 Only the code segments will be always shared. Data segments will use the copy-on-write technique, so it is shared before write operation to memory.
 
-To verify it, you are asked to running two programs(provided by TA), which are both use a same handmake shared library. 
+To verify it, you are asked to running two programs(provided by TA), which are both use a same handmake shared library.
 
 These programs will both print one physical address in the code segment and one in the data segment.
 Then, the operation of inputing any number will drive the program to write something to shared library's data segment, and print two physical addresses after that.
@@ -719,7 +719,7 @@ How to run the program::
       <Ctrl-Z>
 
     # show background processes and job id
-    $ jobs 
+    $ jobs
     Job     Group   CPU     State   Command
     2       3089    0%      stopped ./shared_library_test2
     1       3075    0%      stopped ./shared_library_test1
@@ -838,22 +838,22 @@ Reference
 
 .. [#] However, not just for shared libraries, every ``mmap`` system call without assigning mapping address will use this segment.
 
-       e.g. memory allocation (``malloc``) with size larger than ``M_MMAP_THRESHOLD`` will use this segments instead of heap, in the current glibc ``malloc`` implementation. 
+       e.g. memory allocation (``malloc``) with size larger than ``M_MMAP_THRESHOLD`` will use this segments instead of heap, in the current glibc ``malloc`` implementation.
 
        see `man mmap <http://man7.org/linux/man-pages/man2/mmap.2.html>`_, `man mallopt <http://man7.org/linux/man-pages/man3/mallopt.3.html>`_ for more infomation.
 
 .. [#] linux device number
 
        ch2.2 device number of `link <http://tldp.org/HOWTO/Partition/devices.html>`_
-       
+
 .. [#] C standard library functions in <math.h> is the only exception, their implemenation is at libm.so.
 
 .. [#] `man ld.so <http://man7.org/linux/man-pages/man8/ld.so.8.html>`_
 
 .. [#B] `man vdso <http://man7.org/linux/man-pages/man7/vdso.7.html>`_
 
-.. [#] trace libraries' memory mapping system call. 
-   
+.. [#] trace libraries' memory mapping system call.
+
         .. image:: pic/strace_mmap.png
            :scale: 75%
 
@@ -864,9 +864,9 @@ Reference
        For more infomation, see the link `semantic version <http://semver.org/>`_.
 
 .. [#] 64 bits data models: https://en.wikipedia.org/wiki/64-bit_computing#64-bit_data_models
-       
+
         Data model is important concept because it may be the only way to know the size of non-fixed sized integer(tranditional integer) in C.
 
         Integer size in C/C++ is an annoying topic. The following link gives some info `一個長整數各自表述 (in 64-bit system) <http://dada.tw/2008/04/18/85/>`_
 
-.. [#] 4 layer translation in Linux Kernel for x86, x86+PAE, x86_64 architecture: https://lwn.net/Articles/117749/ 
+.. [#] 4 layer translation in Linux Kernel for x86, x86+PAE, x86_64 architecture: https://lwn.net/Articles/117749/
