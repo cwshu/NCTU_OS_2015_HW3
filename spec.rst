@@ -14,7 +14,7 @@ Then, you will write two userspace programs to carry out the experiments. (Secti
 To help you with this homework, we also provide 3 tutorial sections (Section 1~3).
 
 - In Section 1, we will show how to get the process memory layout via procfs.
-  We also also demonstrate how shared libraries are structured in the memory layout by creating a simple shared library.
+  We also demonstrate how shared libraries are structured in the memory layout by creating a simple shared library.
 
 - In Section 2, we will show how to add a system call to linux kernel.
 
@@ -28,7 +28,7 @@ Section 1. Process Memory Layout
 In Section 1, we will discuss about how process uses memory and introduce some tools for observing it.
 
 A. Basic Process Memory Layout
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Basically, the memory of a process can be divided into 4 parts. 
 
@@ -62,10 +62,12 @@ In Figure 2.
 2. Data and bss segment corresponds to the data segments, where bss segment stores uninitialized global variable.
 3. Heap segment and stack segment are idential that in the basic process memory layout.
 4. Memory mapping segment consists of many segments, which is usually used for shared libraries' code and data segment. [3]_
-5. ``RLIMIT_STACK`` is the maximum size of stack. If stack size is larger than that, stack overflow will occur. you can use ``ulimit`` to control ``RLIMIT_STACK`` for each user in Linux.
+5. ``RLIMIT_STACK`` is the maximum size of stack. If stack size is larger than that, stack overflow will occur. you can use ``getrlimit/setrlimit`` system call to control ``RLIMIT_STACK`` for each user in Linux.
 6. Random offset is a security policy called ASLR(Address Space Layout Randomization). We won't discuss it in this HW.
 
-Part of the program code of a process may exist in library forms. Static libraries are linked into the executable at compilation time while shared libraries are loaded at runtime [2]. As we will see in the homework, a shared library can be shred by multiple processes. That is why they are called "shared" libraries.
+Part of the program code of a process may exist in library forms.
+Static libraries are linked into the executable at compilation time while shared libraries are loaded at runtime [2]_.
+As we will see in the homework, a shared library can be shared by multiple processes. That is why they are called "shared" libraries.
 
 Also because shared libraries are seperate from the main executable, they have independent code and data segments.
 
@@ -116,7 +118,9 @@ We will run a simple program and observe its memory layout.
 
    VMA is very similar thing to the concept of "segments" in linux kernel implementation.
 
-   VMA is a contiguous range of virtual addresses that have the same permission flags.
+   a process' virtual address space is organised in sets of VMAs.
+
+   Each VMA is a contiguous range of virtual addresses that have the same permission flags, and it is consist of multiple memory pages.
 
    The fields in each line are::
    
@@ -127,16 +131,22 @@ We will run a simple program and observe its memory layout.
      
    - ``start``, ``end``
     
-      The beginning and ending virtual addresses for this memory area.
+      The beginning and ending virtual addresses for this VMA.
+      The size of VMA should be multiple of memory page's size (e.g. 4KB in x86_64).
 
    - ``perm(permission)``
 
       read, write, execute permission for this virtual memory area, just like linux file system permission.
-   
+
+      For example, we can read variables if they are in the memory with read permission.
+      we can write variables if they are in the memory with write permission.
+      we can execute code if they are in the memory with execute permission.
+
    - ``inode``, ``image``, ``offset``
 
       If there is a file mapping to this VMA (sometimes caused by ``mmap`` syscall), these value are about the mapped file.
-      File's inode, file path, and the starting file offset mapping to this memory.
+
+      (``inode``, ``image``, ``offset``) = (file's inode, file path, the starting file offset mapping to this memory)
 
       ``man mmap`` for more infomation.
      
@@ -163,7 +173,7 @@ We will run a simple program and observe its memory layout.
 
       Stack segment has read and write permission. It is same as Data segment.
 
-      segment size = 0x7ffdf1cb1000 - 0x7ffdf1c90000 = 0x21000, so it is consist of 33 4KB pages in stack segment.
+      segment size = 0x7ffdf1cb1000 - 0x7ffdf1c90000 = 0x21000, so it is consist of thirty three 4KB pages in stack segment.
       :: 
 
          7ffdf1c90000-7ffdf1cb1000 rw-p 00000000 00:00 0        [stack]
@@ -171,6 +181,10 @@ We will run a simple program and observe its memory layout.
    c. Third, shared libraries
     
       Like process name, shared libraries can be easily identified by the library file names.
+
+      We can also use permissions to distinguish between code segment and data segment of shared libraries.
+      
+      The special one is the VMA only with read permission, which is typically used for read-only data segment(i.e. ``.rodata``).
       ::
 
          7fde68109000-7fde682a4000 r-xp 00000000 08:06 8787453  /usr/lib/libc-2.22.so
@@ -187,7 +201,7 @@ We will run a simple program and observe its memory layout.
       libc.so is standard C library, which includes implementation of ``printf()``, ``fopen()`` [5]_. 
       ld.so is the dynamic linker/loader, for dynamic loading of other shared libraries. [6]_
 
-      ``ldd`` can detetermin the shared library dependencies of an executable.::
+      ``ldd`` can determine the shared library dependencies of an executable.::
 
          # dependency of hello.out
          $ ldd hello.out
@@ -205,22 +219,29 @@ We will run a simple program and observe its memory layout.
       # foreground the suspend program
       $ fg
 
-      <ENTER> to finish the program.
+      # <ENTER> to finish the program.
+      # <Ctrl-C> to cancel the program directly.
 
-Then, you may run the second program(sorting_number.out) to observe heap memory allocation.
+Then, you may run the second program(sorting_number.out) to observe heap memory allocation.::
 
     $ ./sorting_number [num] # malloc num*sizeof(int) byte
+
+    # we can observe memory before input unsorted number.
 
 At last, you may run the third program, we can observe relation between C pointer address and procfs's virtual memory address::
 
     $ cd process_in_memory/
 
     # build a program process_in_memory and a shared library libpim.so.1
+        # p.s. 
+        # we can ignore the warning message of compilation (%0p is non-standard C style). 
+        # If you want to know how to prevent this warning message, see Section4 PartB template code.
     $ make clean all
-    # set library path to current working directory, so loader can find shared library libpim.so.1
-    $ export LD_LIBRARY_PATH=`pwd`
-    # running a program
-    $ ./process_in_memory
+
+    # set library path to current working directory, so loader can find shared library libpim.so.1.
+    # set library path inlinely, and running a program.
+        # p.s. This inline environment variable syntax is bash(default in linux) only syntax, other shell use different ones.
+    $ LD_LIBRARY_PATH=`pwd` ./process_in_memory    
 
     # suspend program and get process memory layout
     $ <Ctrl-Z>
@@ -251,7 +272,7 @@ D. [Supplement] How to build a shared library
 Reference [2]_ is our good friend. :)
 
 Section 2. Adding a new Linux system call
----------------------------------------------------
+-----------------------------------------
 
 Modern operating systems such as Windows and Linux are structured into two spaces: user space and kernel space.
 Most of the operating system functions are implemented in the kernel.
@@ -273,8 +294,13 @@ A. Use ``strace`` to trace the system calls made by the ``ls`` command
 
    **Figure 6. screenshot of strace command**
 
-3. You can see all the system calls made by the ls command in sequential order.
-   For instance, in Figure 6, we can see that the ls command has invoked the execve, brk, access, and mmap system calls.
+3. You can see all the system calls made by the ``ls`` command in sequential order.
+   For instance, in Figure 6, we can see that the ``ls`` command has invoked the ``execve``, ``brk``, ``access``, and ``mmap`` system calls.
+
+   ``man 2 <syscall_name> # e.g. man 2 brk`` tells us the meaning of system calls.
+
+p.s. ``strace`` is a helpful tool to observe the system or process behavior. 
+For example related to this homework, we can understand how to use system call to load shared libraries into memory by ``strace``. [11]_
 
 B. Add a custom system call
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -322,7 +348,7 @@ B. download kernel source
         # This will decompress and unpack kernel source to directory linux-3.19/ at current working directory.
 
 2. Adding custom system call
-""""""""""""""""""""""""""""""""""""
+""""""""""""""""""""""""""""
    
 A. Define the custom system call in the syscall table (see Figure 10)::
 
@@ -420,7 +446,7 @@ E. setting boot option non-hidden and wait for 10 sec::
 
       **Figure 15. close grub hidden menu**
 
-Every time you modify the kernel source (fix bug or ... etc), you can just repeat step C ~ E for building new kernel.
+Every time you modify the kernel source (fix bug or ... etc), you can just repeat step C ~ D for building new kernel.
 You do not need to run ``make clean`` if you just modify few code of kernel source without modifying ``Makefile``. You build it faster.
 Otherwise, if you modify ``Makefile`` after running ``make clean``, please re-run ``make clean`` to remove the previous build object files.
 
@@ -533,14 +559,14 @@ The rest of translation is pretty much the same.
 You can finish the HW with only Section 3 message.
 
 Also, you can trace Linux kernel to understand these structures and functions more.
-LXR [8]_ is our good friend to trace linux kernel. See Appendix A. for example.
+LXR [#]_ is our good friend to trace linux kernel. See Appendix A. for example.
 
 Section 4. [Assignment] Adding an address translation system call and observing copy-on-write and page sharing
--------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------
 
-Part A. add an address translation system call and confirm it with child process forking and memory copy-on-write.
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-NOTE: For all example code, please modify system call number(Macro ``SYSCALL_NUM_LOOKUP_PADDR``) to match the actual system  call number you used for the custom system call in the system call table.
+Part A. add an address translation system call and confirm it with child process forking and memory copy-on-write
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+NOTE: For all example code, please modify system call number(Macro ``SYSCALL_NUM_LOOKUP_PADDR``) to match the actual system call number you used for the custom system call in the system call table.
 
 You’ve learned in the class that the fork system call can be used to create a child process.
 In essence, the fork system call creates a separate address space for the child process.
@@ -680,7 +706,7 @@ Then, we'll find what is ``pgdval_t``. To search ``pgdval_t``, we'll find 3 file
 
    **Figure 31. LXR identifier search pgdval_t**
 
-No matter which file we use in x86_64, we can observe 3 file definition first.::
+we don't consider which one is really used currently, we can observe 3 file definition first.::
 
     typedef unsigned long   pgdval_t; // pgtable-2level_types.h
     typedef u64             pgdval_t; // pgtable-3level_types.h
