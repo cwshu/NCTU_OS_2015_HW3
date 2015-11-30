@@ -61,12 +61,12 @@ In Figure 2.
 1. Text segment corresponds to the code segment as in the basic process memory layout.
 2. Data and bss segment corresponds to the data segments, where bss segment stores uninitialized global variable.
 3. Heap segment and stack segment are idential that in the basic process memory layout.
-4. Memory mapping segment consists of many segments, which is usually used for shared libraries' code and data segment. [3]_
+4. Memory mapping segment consists of many segments, which is usually used for shared libraries' code and data segment. [#]_
 5. ``RLIMIT_STACK`` is the maximum size of stack. If stack size is larger than that, stack overflow will occur. you can use ``getrlimit/setrlimit`` system call to control ``RLIMIT_STACK`` for each user in Linux.
 6. Random offset is a security policy called ASLR(Address Space Layout Randomization). We won't discuss it in this HW.
 
 Part of the program code of a process may exist in library forms.
-Static libraries are linked into the executable at compilation time while shared libraries are loaded at runtime [2]_.
+Static libraries are linked into the executable at compilation time while shared libraries are loaded at runtime [#A]_.
 As we will see in the homework, a shared library can be shared by multiple processes. That is why they are called "shared" libraries.
 
 Also because shared libraries are seperate from the main executable, they have independent code and data segments.
@@ -152,7 +152,7 @@ We will run a simple program and observe its memory layout.
      
    - ``major``, ``minor``
 
-      device number [4]_ for device holding memory mapped file. This is not discussed in this HW.
+      device number [#]_ for device holding memory mapped file. This is not discussed in this HW.
 
    a. First, find the process name. it can point you to the code and data segments of your program.
       Code and Data segment infomation are stored in executable file (in ELF format).
@@ -198,14 +198,15 @@ We will run a simple program and observe its memory layout.
          7fde686ce000-7fde686cf000 r--p 00021000 08:06 8787452  /usr/lib/ld-2.22.so
          7fde686cf000-7fde686d0000 rw-p 00022000 08:06 8787452  /usr/lib/ld-2.22.so
 
-      libc.so is standard C library, which includes implementation of ``printf()``, ``fopen()`` [5]_. 
-      ld.so is the dynamic linker/loader, for dynamic loading of other shared libraries. [6]_
+      libc.so is standard C library, which includes implementation of ``printf()``, ``fopen()`` [#]_. 
+
+      ld.so is the dynamic linker/loader, for dynamic loading of other shared libraries. [#]_
 
       ``ldd`` can determine the shared library dependencies of an executable.::
 
          # dependency of hello.out
          $ ldd hello.out
-         # linux-vdso.so is about fast system call(int 0x80 is slow) in linux [7]
+         # linux-vdso.so is about fast system call(int 0x80 is slow) in linux [6]
 
          # dependency of commands
          # executable path of command
@@ -269,7 +270,7 @@ Use it to running x86 assembly code in C code to print processor's program count
 D. [Supplement] How to build a shared library
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Reference [2]_ is our good friend. :)
+Reference [#A]_ is our good friend. :)
 
 Section 2. Adding a new Linux system call
 -----------------------------------------
@@ -300,7 +301,7 @@ A. Use ``strace`` to trace the system calls made by the ``ls`` command
    ``man 2 <syscall_name> # e.g. man 2 brk`` tells us the meaning of system calls.
 
 p.s. ``strace`` is a helpful tool to observe the system or process behavior. 
-For example related to this homework, we can understand how to use system call to load shared libraries into memory by ``strace``. [11]_
+For example related to this homework, we can understand how to use system call to load shared libraries into memory by ``strace``. [#]_
 
 B. Add a custom system call
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -785,7 +786,7 @@ Appendix A. Using LXR to help us tracing Linux Kernel
 
 - Source Code Navigation: just a linux kernel repository, read source code in web.
 - Identifier Search: search variable name, function name, macro in linux kernel source code.
-- choose linux kernel version, all minor version [9]_ after linux kernel 3.7 is available, we use 3.19.0 this time.
+- choose linux kernel version, all minor version [#]_ after linux kernel 3.7 is available, we use 3.19.0 this time.
 
 We'll search ``struct pgd_t`` for example. See Figure 30 first.
 
@@ -812,7 +813,7 @@ we don't consider which one is really used currently, we can observe 3 file defi
 
 ``u64`` is fixed sized integer macro in linux kernel, simply means 64 bits unsigned integer.
 
-x86_64 in Unix-like platform (e.g. Linux) use LP64 data model [10]_, which means ``unsigned long`` is 64 bits integer.
+x86_64 in Unix-like platform (e.g. Linux) use LP64 data model [#]_, which means ``unsigned long`` is 64 bits integer.
 
 Thus, in three definitions, ``pgdval_t`` are all simply a 64 bits unsigned integer.
 
@@ -824,51 +825,48 @@ To trace the ``*_offset()`` function like this way, you may found that offset fu
 
 4 level translation operation is similar to doing 4 times of pointer deferencing.
 
-If you are curious about 3 definition of ``pgdval_t`` in x86 platform, please see reference [11]_.
+If you are curious about 3 definition of ``pgdval_t`` in x86 platform, please see reference [#]_.
 
 Reference
 ---------
-.. [1] Another way for library is to have an entry point, but an entry point is shadowed when it is used as a library.
-       The entry point is used when it is run as a standalone program. 
-
-       That is, this library is both a library and a standalone program simultaneously.
-
-       In binary level, position independent executable use this concept.
-
-       In high level programming language, python's feature ``if __name__ == "__main__":`` use this concept.
-
-.. [2] static, shared, and dynamic loaded library.
+.. [#A] static, shared, and dynamic loaded library.
 
        Shared library can be really dynamic loaded by dl-series function, without compile time hinting.
 
        `[LinuxDev] cole945 [心得] 用 gcc 自製 Library <https://www.ptt.cc/bbs/LinuxDev/M.1162669989.A.2E6.html>`_
+       `Building and Using ELF Shared Libraries, A Tutorial <http://nairobi-embedded.org/015_elf_shared_libraries.html#shared-library-build>`_
 
-.. [3] However, not just for shared libraries, every ``mmap`` system call without assigning mapping address will use this segment.
+.. [#] However, not just for shared libraries, every ``mmap`` system call without assigning mapping address will use this segment.
 
        e.g. memory allocation (``malloc``) with size larger than ``M_MMAP_THRESHOLD`` will use this segments instead of heap, in the current glibc ``malloc`` implementation. 
 
        see `man mmap <http://man7.org/linux/man-pages/man2/mmap.2.html>`_, `man mallopt <http://man7.org/linux/man-pages/man3/mallopt.3.html>`_ for more infomation.
 
-.. [4] linux device number
+.. [#] linux device number
 
        ch2.2 device number of `link <http://tldp.org/HOWTO/Partition/devices.html>`_
        
-.. [5] C standard library functions in <math.h> is the only exception, their implemenation is at libc.so.
+.. [#] C standard library functions in <math.h> is the only exception, their implemenation is at libm.so.
 
-.. [6] `man ld.so <http://man7.org/linux/man-pages/man8/ld.so.8.html>`_
+.. [#] `man ld.so <http://man7.org/linux/man-pages/man8/ld.so.8.html>`_
 
-.. [7] `man vdso <http://man7.org/linux/man-pages/man7/vdso.7.html>`_
+.. [#B] `man vdso <http://man7.org/linux/man-pages/man7/vdso.7.html>`_
 
-.. [8] `lxr <http://lxr.free-electrons.com/>`_
+.. [#] trace libraries' memory mapping system call. 
+   
+        .. image:: pic/strace_mmap.png
+           :scale: 75%
 
-.. [9] Program Version Numbering. X.Y.Z (MAJOR.MINOR.PATCH) is one common style of it. Three number has different meaning to software API compatibility.
+.. [#] `LXR <http://lxr.free-electrons.com/>`_
+
+.. [#] Program Version Numbering. X.Y.Z (MAJOR.MINOR.PATCH) is one common style of it. Three number has different meaning to software API compatibility.
 
        For more infomation, see the link `semantic version <http://semver.org/>`_.
 
-.. [10] 64 bits data models: https://en.wikipedia.org/wiki/64-bit_computing#64-bit_data_models
+.. [#] 64 bits data models: https://en.wikipedia.org/wiki/64-bit_computing#64-bit_data_models
        
         Data model is important concept because it may be the only way to know the size of non-fixed sized integer(tranditional integer) in C.
 
         Integer size in C/C++ is an annoying topic. The following link gives some info `一個長整數各自表述 (in 64-bit system) <http://dada.tw/2008/04/18/85/>`_
 
-.. [11] 4 layer translation in Linux Kernel for x86, x86+PAE, x86_64 architecture: https://lwn.net/Articles/117749/ 
+.. [#] 4 layer translation in Linux Kernel for x86, x86+PAE, x86_64 architecture: https://lwn.net/Articles/117749/ 
