@@ -574,15 +574,17 @@ The child process has an exact copy of all the memory segments of the parent pro
 The copying is obviously a time consuming process.
 As a result, to reduce the overhead of memory copying, most fork implementation (including the one in Linux kernel) adopts the so-called copy-on-write strategy.
 The memory pages of the child process are initially mapped to the same physical frames of the parent process.
-Only when a child process memory page is about to be overwritten, will a new physical copy of that be created, so the modification on that page by one process will not be seen by the other process.
+Only when a child process memory page is about to be overwritten, will a new physical copy of that be created, so the modification that page by one process will not be seen by the other process.
 
-In Part A, you need to implment the address translation system call that translates a virtual address to the corresponding physical address. Then, 
-you need to observe the copy-on-write behavior of fork system call and check if your address translation system call is working properly.
+In Part A, you need to add the address translation system call(provided by TA) that translates a virtual address to the corresponding physical address into linux kernel.
+Then, you need to observe the copy-on-write behavior of fork system call and check if this system call is working properly.
+After finishing it, just write a simple report.
 
-For the address translation system call, it should take two inputs, which are ``pid`` (process id) and a ``virtual address``. The output is the corresponding physical address.
-A template (named ``PartA_kernel_patch/lookup_paddr.c``) will help you complete the task.
-You just need to add the necessary code in it, integrate the template file into the kernel source, and rebuild the kernel.
-You can then test the effect of the system call following the same steps in Section 2.
+For the address translation system call, it should take two inputs, which are ``pid`` (process id) and a ``virtual address``.
+The output is the corresponding physical address.
+
+The system call implementation is at ``PartA_kernel_patch/lookup_paddr.c``. 
+You just need to add it to linux kernel and rebuild it. Follow the same steps in Section 2.
 
 ``PartA_user_test_program/basic_fork_ex.c`` is the user-level test program that you will use for testing your system call. To verify the correctness of the address translation system call, the program will allocate a variable ``mem_alloc`` on the heap. It will then use fork to create a child process and modify the value of the variable. 
 
@@ -593,79 +595,175 @@ You should observation something like Figure 25.
     
    **Figure 25. basic fork example for CoW strategy**
 
-The virtual addresses for the variable ``mem_alloc`` are identical in the parent process and in the child process. This is expected as fork will create a copy of the parent memory content for the child. The physical addresses are the same as well, which indicate that the underying memory pages are shared (so the copy is actually a 'logical copy'). However, after the child modifies the value of the variable ``mem_alloc``, we can see that the memory pages of the parent and the child processes bear different values, and more importantly, the physical addresses for ``mem_alloc`` are now different.
+The virtual addresses for the variable ``mem_alloc`` are identical in the parent process and in the child process.
+This is expected as fork will create a copy of the parent memory content for the child.
+
+The physical addresses are the same as well, which indicate that the underlying memory pages are shared (so the copy is actually a 'logical copy').
+
+However, after the child modifies the value of the variable ``mem_alloc``, we can see that the memory pages of the parent and the child processes bear different values, and more importantly, the physical addresses for ``mem_alloc`` are now different.
+
 However, their virtual addresses are still the same.
 
-Part B. copy-on-write in stack and heap segment, CoW per page
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+**After finishing part A, please write a report to answer two question(basement and advanced).**
 
-Then, we want to observe CoW strategy more clearly. Trying to observe memory CoW of each page individually, and CoW in each segment individually.
+1. [Basement] 60% grade
 
-In Part B, you are asked to write a program to verify memory CoW of stack and heap segment of fork system call.
-In the example program, we need to seen 4 writing operations to variable after process forking.
-each of 2 writing operations makes a single page copy in stack, and each of another 2 writing operations makes it in heap.
+   Given a process with two memory pages in virtual address space.
+   Their virtual address are ``0x400000 ~ 0x401000`` and ``0x600000 ~ 0x601000``.
+   The 4 level page index of ``0x400000`` is ``(0, 0, 2, 0)``, and of ``0x600000`` is ``(0, 0, 3, 0)``.
 
-A template (named ``stack_and_heap.c``) will help you complete the task.
+   We know that every virtual address need to do 4 level address translation to find physical address, so they need 4 memory pages in the page table. Each level need a memory page. For example, in Figure 21, you find 4 pages in page table, and one page is physical frame.
 
-The expected evaluation is like Figure 26 ~ 28. Heap buffer1 and buffer2 are both similar.
+   Thus, two memory pages of process in virtual address space both have 4 memory pages in page table.
 
-.. figure:: pic/stack_and_heap_evaluation1.png
+   Question: Do they totally use 8 pages in page table, or they may share some pages in page table? 
+
+2. [Advanced] 10% grade
+
+   Given a process has two memory pages in virtual address space::
+   
+       00400000-00401000 r-xp 00000000 08:01 1315847  <file_path>
+       00600000-00601000 r--p 00000000 08:01 1315847  <file_path>
+
+   We does 2 address translation system call ``sys_lookup_paddr(getpid(), 0x400000)`` and ``sys_lookup_paddr(getpid(), 0x600000)`` in the system, and we can get 2 system calls log from ``dmesg``::
+
+       translate vaddr 0x400000 by page table at 0xffff880072d69000
+       page table index: 0:0:2:0
+       pgd_val = 0x77a18067
+       pud_val = 0x74d99067
+       pmd_val = 0x74d72067
+       pte_val = 0x1a63c865
+       vaddr 400000 is at 4KB page
+
+       translate vaddr 0x600000 by page table at 0xffff880072d69000
+       page table index: 0:0:3:0
+       pgd_val = 0x77a18067
+       pud_val = 0x74d99067
+       pmd_val = 0x715a0067
+       pte_val = 0x8000000031a64865
+       vaddr 600000 is at 4KB page
+
+   Question: Please draw a 4 level page table of this process, using the infomation obtained by system call log.
+
+   The picture will be like Figure 21, but with memory address and index on each page.
+
+   Also, Figure 21 is just a page table with single memory page in virtual address space. 
+   2 memory pages in virtual address space is more complex.
+
+   Hint 1: You can use the virtual address in the address of 1st level of page table, because the log just print the virtual address
+   Hint 2: If you don't draw a picture by software, you can draw a picture on paper and take a photo or scan picture into computer. (There is a scanner in NCTU Information Technology Service Center 24 hour region.)
+
+
+Part B. copy-on-write single page
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+CoW technique doesn't copy full address space at once, it only copy single page in one memory write instruction for low latency of each instruction.
+
+In Part B, we want to observe memory CoW of each page individually.
+you are asked to finish a experiment program to verify memory CoW of stack segment of fork system call.
+In the experiment program, we need to seen 2 writing operations to different variables at different memory pages in stack after process forking.
+each of 2 writing operations makes a different page copy in stack.
+
+**Just finish the example program (PartB_stack_single_page/stack_single_page.c). Add less than 10 lines of code.**
+
+The expected evaluation is like Figure 26 ~ 28.
+
+.. figure:: pic/stack_single_page_evaluation1.png
    :scale: 75%
 
    **Figure 26. child use same physical page as parent**
 
-.. figure:: pic/stack_and_heap_evaluation2.png
+.. figure:: pic/stack_single_page_evaluation2.png
    :scale: 75%
 
-   **Figure 27. simply copy stack buffer1. stack buffer2 and heap buffer are also shared pages.**
+   **Figure 27. simply copy stack buffer1. stack buffer2 are still shared pages.**
 
-.. figure:: pic/stack_and_heap_evaluation3.png
+.. figure:: pic/stack_single_page_evaluation3.png
    :scale: 75%
 
    **Figure 28. simply copy stack buffer2.**
 
-
 Part C. shared library
 ~~~~~~~~~~~~~~~~~~~~~~
 
-At last, we will take a look a look at how shared library is mapped in the memory address space.
-We both know a shared library in the memory consists of code and data segments, only the code segment is always shared.
+At last, we will take a look at how shared library is mapped in the memory address space.
 
-To verify it, you are asked to write a program with a handmake shared library (Section 1). 
-This program will fork a child process write to the shared library's data segment, and print the physical address of shared library's code and data segment for both parent and child process. [這應該是一個range? 同學可能會不確定print the physical address是要印哪一個位址]
-Then we'll found same physical address in code segment and different physical address in data segment [這句話我看不太懂].
+We usually simply says that shared libraries is shared between process, it won't consume memory repeatedly.
+However, does a new process really consume zero memory for using existing shared library in the memory?
 
-There is no template for this part. You have to work on your own.
+We both know a shared library in the memory consists of code and data segments(Section 1).
+Only the code segments will be always shared. Data segments will use the copy-on-write technique, so it is shared before write operation to memory.
 
-You can use Section 1 example (``process_in_memory``) as the base, and rely on knowledge gained in Section 4 Part A and B (address translation system call) to finish this part by yourself.
+To verify it, you are asked to running two programs(provided by TA), which are both use a same handmake shared library. 
+
+These programs will both print one physical address in the code segment and one in the data segment.
+Then, the operation of inputing any number will drive the program to write something to shared library's data segment, and print two physical addresses after that.
+By these programs, you can find that both segments is shared at start. The data segment is copyed and not shared after writing to shared library data segment.
+
+**Please write a report to briefly explain the purpose of the programs and experiment.**
+
+How to run the program::
+
+    cd Section4/PartC_shared_library_test/
+    # build 2 programs ./shared_library_test1 and ./shared_library_test2
+    make clean all
+
+    # set library path to current working directory, so loader can find shared library libpim.so.1.
+    $ export LD_LIBRARY_PATH=`pwd`
+
+    # run 2 programs
+    $ ./shared_library_test1
+      <Ctrl-Z>
+    $ ./shared_library_test2
+      <Ctrl-Z>
+
+    # show background processes and job id
+    $ jobs 
+    Job     Group   CPU     State   Command
+    2       3089    0%      stopped ./shared_library_test2
+    1       3075    0%      stopped ./shared_library_test1
+
+    # foreground specific processes by job id
+    # input to ./shared_library_test1, see the copy-on-write on data segment.
+    $ fg %1
+      input number
+      <Ctrl-Z>
+    # input to ./shared_library_test2, see the copy-on-write on data segment.
+    $ fg %2
+      input number
+      <Ctrl-Z>
+
+Hint: If you think the routine is complex and annoying, you can learn how to use terminal multiplexer(e.g. ``tmux``, ``screen``. ``gnome-terminal`` also provide this feature by ``<Ctrl-Shift-T>``) to help you finish the experiment.
 
 The expected output from your program should look like Figure 29.
 
-.. figure:: pic/shared_library_evaluation.png
+.. figure:: pic/shared_library_evaluation1.png
    :scale: 75%
 
-   **Figure 29. shared library only shared code segment if the program write to all memory pages in data segment**
+   **Figure 29. shared library share code and data segment at start.(same physical address but different virtual address)**
+
+.. figure:: pic/shared_library_evaluation2.png
+   :scale: 75%
+
+   **Figure 30. shared library only shared code segment. If the program write to one page in data segment, this page will be not shared between process(CoW).**
 
 Grading Policy
 --------------
 - Section 4
 
-  - Part A. 70%
-  - Part B. 20%
-  - Part C. 10%
+  - Part A. 60% for Question 1, 10% for Question 2
+  - Part B. 15%
+  - Part C. 15%
 
 Deliverable
 -----------
 - Section 4
 
-  - Part A. ``lookup_paddr.c``
-  - Part B. ``stack_and_heap.c``
-  - Part C. ``shared_library/`` directory
+  - Part A. ``hw3_report.pdf``
+  - Part B. ``stack_single_page.c``
+  - Part C. ``hw3_report.pdf``
 
-    - A **Makefile**. You can use an example one.
-    - Source files that compile, by typing ``make``, into an executable ``shared_library_test`` and dependent shared library ``libslt.so.1.0.0``.
-    - Optionally, a file of name ``README`` that contains anything you wish to point out to us.
-
+- Put all writings in a single pdf file ``hw3_report.pdf``.
 - Put all the files/directories in ``HW3_<STUDENT ID>/``, compress it to ``HW3_<STUDENT ID>.zip``, and upload it to e-campus.
 
 Contact Us
