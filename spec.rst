@@ -7,9 +7,11 @@ Overview
 --------
 In this homework, we will carry two experiments to observe how shared memory works in Linux and understand the virtual memory subsystem.
 
-On Linux, the virtual memory subsystem is implemented in the OS kernel. To obtain the information such as the mapping of physical memory frames for a process, we will need access to data structures maintained by the kernel. Specifically, we will add a Linux system call to translate virtual address to physical address. (Section 4 Part A)
+On Linux, the virtual memory subsystem is implemented in the OS kernel. To obtain the information such as the mapping of physical memory frames for a process, we will need access to data structures maintained by the kernel. Specifically, we will add a Linux system call(implemenation is provided by TA) to translate virtual address to physical address. (Section 4 Part A)
 
-Then, you will write two userspace programs to carry out the experiments. (Section 4 Part B, C)
+Then, you will running two userspace programs to carry out the experiments. (Section 4 Part B, C)
+
+Students are asked to write the report for Section 4 experiments.
 
 To help you with this homework, we also provide 3 tutorial sections (Section 1~3).
 
@@ -613,11 +615,12 @@ However, their virtual addresses are still the same.
    Their virtual address are ``0x400000 ~ 0x401000`` and ``0x600000 ~ 0x601000``.
    The 4 level page index of ``0x400000`` is ``(0, 0, 2, 0)``, and of ``0x600000`` is ``(0, 0, 3, 0)``.
 
-   We know that every virtual address need to do 4 level address translation to find physical address, so they need 4 memory pages in the page table. Each level need a memory page. For example, in Figure 21, you find 4 pages in page table, and one page is physical frame.
+   We know that every virtual address need to do 4 level address translation to find physical address, so they need 4 memory pages in the page table. Each level need a memory page.
+   For example, in Figure 21, you find 4 pages in page table, and one page is physical frame.
 
    Thus, two memory pages of process in virtual address space both have 4 memory pages in page table.
 
-   Question: Do they totally use 8 pages in page table, or they may share some pages in page table?
+   Question: Do they totally use 8 pages in page table, or they share some pages in page table?
 
 2. [Advanced] 10% grade
 
@@ -651,8 +654,8 @@ However, their virtual addresses are still the same.
    Also, Figure 21 is just a page table with single memory page in virtual address space.
    2 memory pages in virtual address space is more complex.
 
-   Hint 1: You can use the virtual address in the address of 1st level of page table, because the log just print the virtual address
-   Hint 2: If you don't draw a picture by software, you can draw a picture on paper and take a photo or scan picture into computer. (There is a scanner in NCTU Information Technology Service Center 24 hour region.)
+   Note 1: You can use the virtual address in the address of 1st level of page table, because the log just print the virtual address
+   Note 2: If you don't draw a picture by software, you can draw a picture on paper and take a photo or scan picture into computer. (There is a scanner in NCTU Information Technology Service Center 24 hour region.)
 
 
 Part B. copy-on-write single page
@@ -661,11 +664,11 @@ Part B. copy-on-write single page
 CoW technique doesn't copy full address space at once, it only copy single page in one memory write instruction for low latency of each instruction.
 
 In Part B, we want to observe memory CoW of each page individually.
-you are asked to finish a experiment program to verify memory CoW of stack segment of fork system call.
+you need to run an experimental program to verify memory CoW of stack segment of fork system call.
 In the experiment program, we need to seen 2 writing operations to different variables at different memory pages in stack after process forking.
 each of 2 writing operations makes a different page copy in stack.
 
-**Just finish the example program (PartB_stack_single_page/stack_single_page.c). Add less than 10 lines of code.**
+**Please write a report to briefly explain the purpose of the experimental program.**
 
 The expected evaluation is like Figure 26 ~ 28.
 
@@ -701,13 +704,13 @@ These programs will both print one physical address in the code segment and one 
 Then, the operation of inputing any number will drive the program to write something to shared library's data segment, and print two physical addresses after that.
 By these programs, you can find that both segments is shared at start. The data segment is copyed and not shared after writing to shared library data segment.
 
-**Please write a report to briefly explain the purpose of the programs and experiment.**
+**Please write a report to explain the purpose of the programs and experiment.**
 
 How to run the program::
 
     cd Section4/PartC_shared_library_test/
     # build 2 programs ./shared_library_test1 and ./shared_library_test2
-    make clean all
+    $ make clean all
 
     # set library path to current working directory, so loader can find shared library libpim.so.1.
     $ export LD_LIBRARY_PATH=`pwd`
@@ -760,12 +763,9 @@ Deliverable
 -----------
 - Section 4
 
-  - Part A. ``hw3_report.pdf``
-  - Part B. ``stack_single_page.c``
-  - Part C. ``hw3_report.pdf``
+  - ``hw3_report.pdf`` for part A ~ C.
 
-- Put all writings in a single pdf file ``hw3_report.pdf``.
-- Put all the files/directories in ``HW3_<STUDENT ID>/``, compress it to ``HW3_<STUDENT ID>.zip``, and upload it to e-campus.
+- Put all writings in a single pdf file ``hw3_report.pdf``, and upload it to e-campus.
 
 Contact Us
 ----------
@@ -834,6 +834,7 @@ Reference
        Shared library can be really dynamic loaded by dl-series function, without compile time hinting.
 
        `[LinuxDev] cole945 [心得] 用 gcc 自製 Library <https://www.ptt.cc/bbs/LinuxDev/M.1162669989.A.2E6.html>`_
+
        `Building and Using ELF Shared Libraries, A Tutorial <http://nairobi-embedded.org/015_elf_shared_libraries.html#shared-library-build>`_
 
 .. [#] However, not just for shared libraries, every ``mmap`` system call without assigning mapping address will use this segment.

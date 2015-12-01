@@ -71,9 +71,13 @@ int main(int argc, char *argv[]){
         printf("origin:\n");
         print_address_wrapper(local_buf1, local_buf2);
 
-        /* TODO */
+        local_buf1[0] = 0xFF;
+        printf("\nwrite to stack buf1:\n");
+        print_address_wrapper(local_buf1, local_buf2);
 
-        /* TODO finished */
+        local_buf2[0] = 0xFF;
+        printf("\nwrite to stack buf2:\n");
+        print_address_wrapper(local_buf1, local_buf2);
     }
     
     return 0;
