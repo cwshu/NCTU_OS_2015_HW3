@@ -6,7 +6,7 @@ HW3: Virtual Memory Experiment
 This is Homework 1 for Introduction to Operating Systems, Fall 2015.
 The main purpose of this assignment is to get fimilar with the concept of virtual memory and process memory layout in Linux.
 
-Student are asked to do the experiment by tutorial, writing a report, and finishing a program by adding less than 10 lines of code.
+Student are asked to do the experiment by tutorial and write a report.
 The detail spec is in `spec.rst <spec.rst>`_.
 
 Contact Us
