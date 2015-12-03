@@ -274,7 +274,7 @@ D. [Supplement] How to build a shared library
 
 Reference [#A]_ is our good friend. :)
 
-Section 2. Add a new Linux system call
+Section 2. Linux system call
 -----------------------------------------
 
 Modern operating systems such as Windows and Linux are structured into two spaces: user space and kernel space.
@@ -305,7 +305,7 @@ A. Use ``strace`` to trace the system calls made by the ``ls`` command
 p.s. ``strace`` is a helpful tool to observe the system or process behavior.
 For example related to this homework, we can understand how to use system call to load shared libraries into memory by ``strace``. [#]_
 
-B. Add a custom system call
+B. Add a new Linux system call
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 1. Download the kernel source
