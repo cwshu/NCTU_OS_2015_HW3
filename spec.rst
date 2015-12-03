@@ -274,7 +274,7 @@ D. [Supplement] How to build a shared library
 
 Reference [#A]_ is our good friend. :)
 
-Section 2. Adding a new Linux system call
+Section 2. Add a new Linux system call
 -----------------------------------------
 
 Modern operating systems such as Windows and Linux are structured into two spaces: user space and kernel space.
@@ -350,7 +350,7 @@ B. download kernel source
         $ tar -xvf linux-3.19.tar.gz
         # This will decompress and unpack kernel source to directory linux-3.19/ at current working directory.
 
-2. Adding custom system call
+2. Add the custom system call
 """"""""""""""""""""""""""""
 
 A. Define the custom system call in the syscall table (see Figure 10)::
