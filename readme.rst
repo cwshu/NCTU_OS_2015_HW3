@@ -7,10 +7,10 @@ NCTU OS 2015
 
 HW3: Virtual Memory Experiment
 ------------------------------
-This is Homework 1 for Introduction to Operating Systems, Fall 2015.
-The main purpose of this assignment is to get fimilar with the concept of virtual memory and process memory layout in Linux.
+This is Homework 3 for Introduction to Operating Systems, Fall 2015.
+This homework assignment will familiarize you with the concept of virtual memory through a series of experiments on the Linux memory subsystem.
 
-Student are asked to do the experiment by tutorial and write a report.
+Please read the tutorials and then carry the prescribed experiment steps. You will have to submit a report for the homework.
 The detail spec is in `spec.rst <spec.rst>`_.
 
 Contact Us
