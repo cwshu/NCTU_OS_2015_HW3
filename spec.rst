@@ -564,10 +564,10 @@ You can finish the HW with only Section 3 message.
 Also, you can trace Linux kernel to understand these structures and functions more.
 LXR [#]_ is our good friend to trace linux kernel. See Appendix A. for example.
 
-Section 4. [Assignment] Adding an address translation system call and observing copy-on-write and page sharing
+Section 4. [Assignment] Add an address translation system call and observe the working of copy-on-write and page sharing
 --------------------------------------------------------------------------------------------------------------
 
-Part A. add an address translation system call and confirm it with child process forking and memory copy-on-write
+Part A. add an address translation system call and confirm it by observing the effect of child process creation and copy-on-write on memory address space mapping
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 NOTE: For all example code, please modify system call number(Macro ``SYSCALL_NUM_LOOKUP_PADDR``) to match the actual system call number you used for the custom system call in the system call table.
 
@@ -658,7 +658,7 @@ However, their virtual addresses are still the same.
    Note 2: If you don't draw a picture by software, you can draw a picture on paper and take a photo or scan picture into computer. (There is a scanner in NCTU Information Technology Service Center 24 hour region.)
 
 
-Part B. copy-on-write single page
+Part B. copy-on-write of a single page
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 CoW technique doesn't copy full address space at once, it only copy single page in one memory write instruction for low latency of each instruction.
