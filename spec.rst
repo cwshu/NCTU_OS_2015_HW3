@@ -759,13 +759,13 @@ Grading Policy
   - Part B. 15%
   - Part C. 15%
 
-Deliverable
+Homework Submission
 -----------
-- Section 4
+- Write a report of your experiment results according to Section 4
 
   - ``hw3_report.pdf`` for part A ~ C.
 
-- Put all writings in a single pdf file ``hw3_report.pdf``, and upload it to e-campus.
+- Your report should be a single pdf file ``hw3_report.pdf``.  Upload it to e-campus.
 
 Contact Us
 ----------
