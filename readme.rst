@@ -1,6 +1,10 @@
 NCTU OS 2015
 ============
 
+.. image:: https://badges.gitter.im/Join%20Chat.svg
+   :alt: Join the chat at https://gitter.im/u1240976/NCTU_OS_2015_HW3
+   :target: https://gitter.im/u1240976/NCTU_OS_2015_HW3?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
+
 HW3: Virtual Memory Experiment
 ------------------------------
 This is Homework 1 for Introduction to Operating Systems, Fall 2015.
