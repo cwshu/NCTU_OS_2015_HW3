@@ -761,7 +761,7 @@ Grading Policy
 
 Homework Submission
 -----------
-- Write a report of your experiment results according to Section 4
+- Write a report on your experiment results from Section 4
 
   - ``hw3_report.pdf`` for part A ~ C.
 
