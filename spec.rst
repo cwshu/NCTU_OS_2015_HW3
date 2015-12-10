@@ -288,7 +288,7 @@ A. Use ``strace`` to trace the system calls made by the ``ls`` command
 
 1. Use ``strace``::
 
-   $ strace ls 2>& strace.txt
+   $ strace ls 2> strace.txt
 
 2. Open/Cat the output file ``strace.txt`` (e.g. Figure 6)
 
@@ -419,14 +419,14 @@ B. generate build config file (at ``.config``) of linux kernel source code. we u
 
 C. build linux kernel executable, kernel image and linux kernel modules::
 
-      $ make vmlinux bzimage modules
+      $ make vmlinux bzImage modules
       # build kernel executable at vmlinux
       # build kernel image at arch/x86/boot/bzImage
       # build kernel modules at module's local directories
 
       # or you can use multiprocess for faster parallel build
       # using 4 process for example
-      $ make -j4 vmlinux bzimage modules
+      $ make -j4 vmlinux bzImage modules
 
 D. install kernel and kernel modules, and modify grub to add boot option of new kernel::
 
