@@ -607,9 +607,9 @@ However, after the child modifies the value of the variable ``mem_alloc``, we ca
 
 However, their virtual addresses are still the same.
 
-**After finishing part A, please write a report to answer two question(basement and advanced).**
+**After finishing part A, please write a report to answer two question(basic and advanced).**
 
-1. [Basement] 60% grade
+1. [Basic] 60% grade
 
    Given a process with two memory pages in virtual address space.
    Their virtual address are ``0x400000 ~ 0x401000`` and ``0x600000 ~ 0x601000``.
