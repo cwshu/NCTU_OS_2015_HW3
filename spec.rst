@@ -619,7 +619,7 @@ However, their virtual addresses are still the same.
    Second page with virtual address range ``0x600000 ~ 0x601000``
    The 4 level page index of ``0x400000`` is ``(0, 0, 2, 0)``, and of ``0x600000`` is ``(0, 0, 3, 0)``.
 
-   Question: To support the address translation of the two memory pages, how much memory space (in terms of number of pages) do we need to llocate for the page table structure? Do we need 8 memory pages for the page table structure? Or, maybe some of the page tables may be shared?
+   Question: To support the address translation of the two memory pages, how much memory space (in terms of number of memory pages) do we need to allocate for the page table structure? Do we need 8 memory pages for the page table structure? Or, maybe some of the page tables may be shared?
 
 2. [Advanced] 10% grade
 
