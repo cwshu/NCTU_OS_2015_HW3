@@ -611,16 +611,15 @@ However, their virtual addresses are still the same.
 
 1. [Basic] 60% grade
 
-   Given a process with two memory pages in virtual address space.
-   Their virtual address are ``0x400000 ~ 0x401000`` and ``0x600000 ~ 0x601000``.
+   We know that every virtual address requries 4 level address translation to be mapped to the corresponding physical address. Each level of the translation invovles a page table, so overall the 4-level translation will invovle 4 page tables. On x86, a page table occupies a memory page. So, the page tables for translating the address range of a memory page will by itself take 4 memory pages in the memory.
+   
+   Now, given a process with two memory pages:
+   
+   First page with virtual address range ``0x400000 ~ 0x401000`` 
+   Second page with virtual address range ``0x600000 ~ 0x601000``
    The 4 level page index of ``0x400000`` is ``(0, 0, 2, 0)``, and of ``0x600000`` is ``(0, 0, 3, 0)``.
 
-   We know that every virtual address need to do 4 level address translation to find physical address, so they need 4 memory pages in the page table. Each level need a memory page.
-   For example, in Figure 21, you find 4 pages in page table, and one page is physical frame.
-
-   Thus, two memory pages of process in virtual address space both have 4 memory pages in page table.
-
-   Question: Do they totally use 8 pages in page table, or they share some pages in page table?
+   Question: To support the address translation of the two memory pages, how much memory space (in terms of number of pages) do we need to llocate for the page table structure? Do we need 8 memory pages for the page table structure? Or, maybe some of the page tables may be shared?
 
 2. [Advanced] 10% grade
 
