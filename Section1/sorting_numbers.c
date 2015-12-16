@@ -6,6 +6,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+void stop(){
+    getchar(); getchar();
+}
+
 int int_cmp(const void *a, const void *b){
     return a - b;
 }
@@ -49,6 +53,6 @@ int main(int argc, char *argv[]){
         }
     }
 
-    getchar();
+    stop();
     return 0;
 }
